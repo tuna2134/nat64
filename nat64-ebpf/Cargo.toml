@@ -1,0 +1,17 @@
+[package]
+name = "nat64-ebpf"
+version = "0.1.0"
+edition.workspace = true
+
+[dependencies]
+nat64-common = { path = "../nat64-common" }
+
+aya-ebpf = { workspace = true }
+aya-log-ebpf = { workspace = true }
+
+[build-dependencies]
+which = { workspace = true }
+
+[[bin]]
+name = "nat64"
+path = "src/main.rs"

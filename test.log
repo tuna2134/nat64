@@ -1,0 +1,2350 @@
+--- building (/home/m-kikuchi/.cargo/bin/cargo)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.15s
+--- topology
+--- starting nat64 (skb mode for veth)
+Error: the BPF_PROG_LOAD syscall returned Permission denied (os error 13). Verifier output: 0: R1=ctx() R10=fp0
+; #[xdp] @ main.rs:1029
+0: (85) call pc+1
+caller:
+ R10=fp0
+callee:
+ frame1: R1=ctx() R10=fp0
+2: frame1: R1=ctx() R10=fp0
+; unsafe { (*self.ctx).data as usize } @ xdp.rs:16
+2: (61) r7 = *(u32 *)(r1 +0)          ; frame1: R1=ctx() R7=pkt(r=0)
+; unsafe { (*self.ctx).data_end as usize } @ xdp.rs:21
+3: (61) r6 = *(u32 *)(r1 +4)          ; frame1: R1=ctx() R6=pkt_end()
+; intrinsics::saturating_sub(self, rhs) @ uint_macros.rs:2564
+4: (bf) r2 = r6                       ; frame1: R2=pkt_end() R6=pkt_end()
+5: (1f) r2 -= r7                      ; frame1: R2=scalar() R7=pkt(r=0)
+6: (b7) r8 = 0                        ; frame1: R8=0
+7: (b7) r3 = 1                        ; frame1: R3=1
+8: (2d) if r2 > r6 goto pc+1          ; frame1: R2=scalar() R6=pkt_end()
+9: (b7) r3 = 0                        ; frame1: R3=0
+10: (55) if r3 != 0x0 goto pc+1       ; frame1: R3=0
+11: (bf) r8 = r2                      ; frame1: R8=scalar(id=1)
+; if pkt_len < ETH_LEN as u32 { @ main.rs:1034
+12: (b7) r2 = 14                      ; frame1: R2=14
+13: (b7) r0 = 1                       ; frame1: R0=1
+14: (2d) if r2 > r8 goto pc+1341      ; frame1: R2=14 R8=scalar(id=1,umin=14)
+; if (data + ETH_LEN) as *const u8 > end { @ parse.rs:52
+15: (bf) r2 = r7                      ; frame1: R2=pkt(r=0) R7=pkt(r=0)
+16: (07) r2 += 14                     ; frame1: R2=pkt(r=0,imm=14)
+17: (2d) if r2 > r6 goto pc+1325      ; frame1: R2=pkt(r=14,imm=14) R6=pkt_end()
+; *(data as *const u8).add(12), @ parse.rs:57
+18: (71) r3 = *(u8 *)(r7 +12)         ; frame1: R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R7=pkt(r=14)
+; unsafe { mem::transmute(bytes) } @ uint_macros.rs:4177
+19: (71) r2 = *(u8 *)(r7 +13)         ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R7=pkt(r=14)
+20: (67) r2 <<= 8                     ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=0xff00,var_off=(0x0; 0xff00))
+21: (4f) r2 |= r3                     ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=0xffff,var_off=(0x0; 0xffff)) R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+22: (bf) r3 = r2                      ; frame1: R2=scalar(id=2,smin=smin32=0,smax=umax=smax32=umax32=0xffff,var_off=(0x0; 0xffff)) R3=scalar(id=2,smin=smin32=0,smax=umax=smax32=umax32=0xffff,var_off=(0x0; 0xffff))
+23: (57) r3 &= 65535                  ; frame1: R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=0xffff,var_off=(0x0; 0xffff))
+; while (etype == ETH_P_8021Q || etype == ETH_P_8021AD) && tags < MAX_VLAN_TAGS as u32 { @ parse.rs:63
+24: (15) if r3 == 0x81 goto pc+3      ; frame1: R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=0xffff,var_off=(0x0; 0xffff))
+25: (b7) r4 = 14                      ; frame1: R4=14
+26: (dc) r2 = be16 r2                 ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=0xffff,var_off=(0x0; 0xffff))
+27: (55) if r3 != 0xa888 goto pc+17   ; frame1: R3=0xa888
+; let p = (data + zext(off)) as *const u8; @ parse.rs:65
+28: (b7) r2 = 14                      ; frame1: R2=14
+29: (63) *(u32 *)(r10 -120) = r2      ; frame1: R2=14 R10=fp0 fp-120=????14
+; intrinsics::volatile_load(src) @ mod.rs:2163
+30: (61) r2 = *(u32 *)(r10 -120)      ; frame1: R2=14 R10=fp0 fp-120=????14
+; let p = (data + zext(off)) as *const u8; @ parse.rs:65
+31: (0f) r2 += r7                     ; frame1: R2=pkt(r=14,imm=14) R7=pkt(r=14)
+; unsafe { intrinsics::offset(self, count) } @ const_ptr.rs:872
+32: (bf) r3 = r2                      ; frame1: R2=pkt(r=14,imm=14) R3=pkt(r=14,imm=14)
+33: (07) r3 += 4                      ; frame1: R3=pkt(r=14,imm=18)
+; if unsafe { p.add(VLAN_LEN) } > end { @ parse.rs:66
+34: (2d) if r3 > r6 goto pc+1308      ; frame1: R3=pkt(r=18,imm=18) R6=pkt_end()
+; etype = u16::from_be_bytes(unsafe { [*p.add(2), *p.add(3)] }); @ parse.rs:70
+35: (71) r3 = *(u8 *)(r2 +2)          ; frame1: R2=pkt(r=18,imm=14) R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+; unsafe { mem::transmute(bytes) } @ uint_macros.rs:4177
+36: (71) r2 = *(u8 *)(r2 +3)          ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+37: (67) r2 <<= 8                     ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=0xff00,var_off=(0x0; 0xff00))
+38: (4f) r2 |= r3                     ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=0xffff,var_off=(0x0; 0xffff)) R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+39: (bf) r3 = r2                      ; frame1: R2=scalar(id=3,smin=smin32=0,smax=umax=smax32=umax32=0xffff,var_off=(0x0; 0xffff)) R3=scalar(id=3,smin=smin32=0,smax=umax=smax32=umax32=0xffff,var_off=(0x0; 0xffff))
+40: (57) r3 &= 65535                  ; frame1: R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=0xffff,var_off=(0x0; 0xffff))
+; while (etype == ETH_P_8021Q || etype == ETH_P_8021AD) && tags < MAX_VLAN_TAGS as u32 { @ parse.rs:63
+41: (15) if r3 == 0x81 goto pc+1284   ; frame1: R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=0xffff,var_off=(0x0; 0xffff))
+42: (15) if r3 == 0xa888 goto pc+1283         ; frame1: R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=0xffff,var_off=(0x0; 0xffff))
+43: (b7) r4 = 18                      ; frame1: R4=18
+; intrinsics::bswap(self as $ActualT) as Self @ uint_macros.rs:767
+44: (dc) r2 = be16 r2                 ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=0xffff,var_off=(0x0; 0xffff))
+; match etype { @ main.rs:1044
+45: (15) if r2 == 0x800 goto pc+69    ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=0xffff,var_off=(0x0; 0xffff))
+46: (b7) r0 = 2                       ; frame1: R0=2
+47: (55) if r2 != 0x86dd goto pc+1308         ; frame1: R2=0x86dd
+; if data + zext(l3 + IPV6_LEN as u32) > data_end { @ main.rs:190
+48: (bf) r2 = r4                      ; frame1: R2=18 R4=18
+49: (07) r2 += 40                     ; frame1: R2=58
+50: (7b) *(u64 *)(r10 -200) = r2      ; frame1: R2=58 R10=fp0 fp-200=58
+51: (63) *(u32 *)(r10 -120) = r2      ; frame1: R2=58 R10=fp0 fp-120=????58
+; intrinsics::volatile_load(src) @ mod.rs:2163
+52: (61) r2 = *(u32 *)(r10 -120)      ; frame1: R2=58 R10=fp0 fp-120=????58
+; if data + zext(l3 + IPV6_LEN as u32) > data_end { @ main.rs:190
+53: (0f) r2 += r7                     ; frame1: R2=pkt(r=18,imm=58) R7=pkt(r=18)
+54: (2d) if r2 > r6 goto pc+84        ; frame1: R2=pkt(r=58,imm=58) R6=pkt_end()
+; let o = zext(off); @ parse.rs:83
+55: (63) *(u32 *)(r10 -120) = r4      ; frame1: R4=18 R10=fp0 fp-120=????18
+; intrinsics::volatile_load(src) @ mod.rs:2163
+56: (61) r2 = *(u32 *)(r10 -120)      ; frame1: R2=18 R10=fp0 fp-120=????18
+; let p = (data + o) as *const u8; @ parse.rs:84
+57: (0f) r2 += r7                     ; frame1: R2=pkt(r=58,imm=18) R7=pkt(r=58)
+; unsafe { intrinsics::offset(self, count) } @ const_ptr.rs:872
+58: (bf) r3 = r2                      ; frame1: R2=pkt(r=58,imm=18) R3=pkt(r=58,imm=18)
+59: (07) r3 += 1                      ; frame1: R3=pkt(r=58,imm=19)
+; if unsafe { p.add(1) } > end { @ parse.rs:86
+60: (2d) if r3 > r6 goto pc+78        ; frame1: R3=pkt(r=58,imm=19) R6=pkt_end()
+; Ok(unsafe { *p }) @ parse.rs:89
+61: (71) r9 = *(u8 *)(r2 +0)          ; frame1: R2=pkt(r=58,imm=18) R9=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+; if b0 >> 4 != 6 { @ main.rs:194
+62: (bf) r2 = r9                      ; frame1: R2=scalar(id=4,smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R9=scalar(id=4,smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+63: (57) r2 &= 240                    ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=240,var_off=(0x0; 0xf0))
+64: (55) if r2 != 0x60 goto pc+74     ; frame1: R2=96
+; let b1 = rb(data, data_end, l3 + 1)?; @ main.rs:197
+65: (bf) r2 = r4                      ; frame1: R2=18 R4=18
+66: (47) r2 |= 1                      ; frame1: R2=19
+; let o = zext(off); @ parse.rs:83
+67: (63) *(u32 *)(r10 -120) = r2      ; frame1: R2=19 R10=fp0 fp-120=????19
+; intrinsics::volatile_load(src) @ mod.rs:2163
+68: (61) r2 = *(u32 *)(r10 -120)      ; frame1: R2=19 R10=fp0 fp-120=????19
+; let p = (data + o) as *const u8; @ parse.rs:84
+69: (0f) r2 += r7                     ; frame1: R2=pkt(r=58,imm=19) R7=pkt(r=58)
+; unsafe { intrinsics::offset(self, count) } @ const_ptr.rs:872
+70: (bf) r3 = r2                      ; frame1: R2=pkt(r=58,imm=19) R3=pkt(r=58,imm=19)
+71: (07) r3 += 1                      ; frame1: R3=pkt(r=58,imm=20)
+; if unsafe { p.add(1) } > end { @ parse.rs:86
+72: (2d) if r3 > r6 goto pc+66        ; frame1: R3=pkt(r=58,imm=20) R6=pkt_end()
+; Ok(unsafe { *p }) @ parse.rs:89
+73: (71) r2 = *(u8 *)(r2 +0)          ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+; rb16(data, data_end, l3 + 4)?, @ main.rs:200
+74: (7b) *(u64 *)(r10 -208) = r2      ; frame1: R2=scalar(id=5,smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R10=fp0 fp-208=scalar(id=5,smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+75: (bf) r0 = r4                      ; frame1: R0=18 R4=18
+76: (07) r0 += 4                      ; frame1: R0=22
+; let o = zext(off); @ parse.rs:95
+77: (63) *(u32 *)(r10 -120) = r0      ; frame1: R0=22 R10=fp0 fp-120=????22
+; intrinsics::volatile_load(src) @ mod.rs:2163
+78: (61) r2 = *(u32 *)(r10 -120)      ; frame1: R2=22 R10=fp0 fp-120=????22
+; let p = (data + o) as *const u8; @ parse.rs:96
+79: (0f) r2 += r7                     ; frame1: R2=pkt(r=58,imm=22) R7=pkt(r=58)
+; unsafe { intrinsics::offset(self, count) } @ const_ptr.rs:872
+80: (07) r2 += 2                      ; frame1: R2=pkt(r=58,imm=24)
+; if unsafe { p.add(2) } > end { @ parse.rs:98
+81: (2d) if r2 > r6 goto pc+57        ; frame1: R2=pkt(r=58,imm=24) R6=pkt_end()
+; rb(data, data_end, l3 + 6)?, @ main.rs:201
+82: (bf) r5 = r4                      ; frame1: R4=18 R5=18
+83: (07) r5 += 6                      ; frame1: R5=24
+; let o = zext(off); @ parse.rs:83
+84: (63) *(u32 *)(r10 -120) = r5      ; frame1: R5=24 R10=fp0 fp-120=????24
+; intrinsics::volatile_load(src) @ mod.rs:2163
+85: (61) r2 = *(u32 *)(r10 -120)      ; frame1: R2=24 R10=fp0 fp-120=????24
+; let p = (data + o) as *const u8; @ parse.rs:84
+86: (0f) r2 += r7                     ; frame1: R2=pkt(r=58,imm=24) R7=pkt(r=58)
+; unsafe { intrinsics::offset(self, count) } @ const_ptr.rs:872
+87: (bf) r3 = r2                      ; frame1: R2=pkt(r=58,imm=24) R3=pkt(r=58,imm=24)
+88: (07) r3 += 1                      ; frame1: R3=pkt(r=58,imm=25)
+; if unsafe { p.add(1) } > end { @ parse.rs:86
+89: (2d) if r3 > r6 goto pc+49        ; frame1: R3=pkt(r=58,imm=25) R6=pkt_end()
+; Ok(unsafe { *p }) @ parse.rs:89
+90: (71) r2 = *(u8 *)(r2 +0)          ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+; rb(data, data_end, l3 + 7)?, @ main.rs:202
+91: (7b) *(u64 *)(r10 -216) = r2      ; frame1: R2=scalar(id=6,smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R10=fp0 fp-216=scalar(id=6,smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+92: (bf) r2 = r4                      ; frame1: R2=18 R4=18
+93: (07) r2 += 7                      ; frame1: R2=25
+; let o = zext(off); @ parse.rs:83
+94: (63) *(u32 *)(r10 -120) = r2      ; frame1: R2=25 R10=fp0 fp-120=????25
+; intrinsics::volatile_load(src) @ mod.rs:2163
+95: (61) r2 = *(u32 *)(r10 -120)      ; frame1: R2=25 R10=fp0 fp-120=????25
+; let p = (data + o) as *const u8; @ parse.rs:84
+96: (0f) r2 += r7                     ; frame1: R2=pkt(r=58,imm=25) R7=pkt(r=58)
+; unsafe { intrinsics::offset(self, count) } @ const_ptr.rs:872
+97: (bf) r3 = r2                      ; frame1: R2=pkt(r=58,imm=25) R3=pkt(r=58,imm=25)
+98: (07) r3 += 1                      ; frame1: R3=pkt(r=58,imm=26)
+; if unsafe { p.add(1) } > end { @ parse.rs:86
+99: (2d) if r3 > r6 goto pc+39        ; frame1: R3=pkt(r=58,imm=26) R6=pkt_end()
+; Ok(unsafe { *p }) @ parse.rs:89
+100: (71) r3 = *(u8 *)(r2 +0)         ; frame1: R2=pkt(r=58,imm=25) R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+101: (b7) r2 = 2                      ; frame1: R2=2
+; if hlim <= 1 { @ main.rs:447
+102: (2d) if r2 > r3 goto pc+1        ; frame1: R2=2 R3=scalar(smin=umin=smin32=umin32=2,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+103: (05) goto pc+139
+; if !ptr.is_null() { @ non_null.rs:280
+243: (7b) *(u64 *)(r10 -264) = r3     ; frame1: R3=scalar(id=7,smin=umin=smin32=umin32=2,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R10=fp0 fp-264=scalar(id=7,smin=umin=smin32=umin32=2,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+244: (7b) *(u64 *)(r10 -256) = r9     ; frame1: R9=scalar(id=8,smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R10=fp0 fp-256=scalar(id=8,smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+245: (7b) *(u64 *)(r10 -248) = r0     ; frame1: R0=22 R10=fp0 fp-248=22
+246: (7b) *(u64 *)(r10 -240) = r5     ; frame1: R5=24 R10=fp0 fp-240=24
+247: (7b) *(u64 *)(r10 -232) = r1     ; frame1: R1=ctx() R10=fp0 fp-232=ctx()
+248: (bf) r1 = r10                    ; frame1: R1=fp0 R10=fp0
+249: (07) r1 += -188                  ; frame1: R1=fp-188
+; let mut src6 = [0u8; 16]; @ main.rs:451
+250: (b7) r2 = 0                      ; frame1: R2=0
+251: (b7) r3 = 16                     ; frame1: R3=16
+252: (bf) r9 = r4                     ; frame1: R4=18 R9=18
+253: (85) call pc+5532
+caller:
+ frame1: R6=pkt_end() R7=pkt(r=58) R8=scalar(umin=14) R9=18 R10=fp0 fp-200=58 fp-208=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-216=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-232=ctx() fp-240=24 fp-248=22 fp-256=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-264=scalar(smin=umin=smin32=umin32=2,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+callee:
+ frame2: R1=fp[1]-188 R2=0 R3=16 R4=18 R5=24 R10=fp0
+5786: frame2: R1=fp[1]-188 R2=0 R3=16 R10=fp0
+; if self.start < self.end { @ range.rs:1103
+5786: (15) if r3 == 0x0 goto pc+6     ; frame2: R3=16
+5787: (b7) r4 = 0                     ; frame2: R4=0
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+5788: (bf) r5 = r1                    ; frame2: R1=fp[1]-188 R5=fp[1]-188
+5789: (0f) r5 += r4                   ; frame2: R4=0 R5=fp[1]-188
+; unsafe { *s.add(i) = b } @ lib.rs:102
+5790: (73) *(u8 *)(r5 +0) = r2        ; frame2: R2=0 R5=fp[1]-188
+; intrinsics::unchecked_add(self, rhs) @ uint_macros.rs:1037
+5791: (07) r4 += 1                    ; frame2: R4=1
+; if self.start < self.end { @ range.rs:1103
+5792: (2d) if r3 > r4 goto pc-5       ; frame2: R3=16 R4=1
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+5788: (bf) r5 = r1                    ; frame2: R1=fp[1]-188 R5=fp[1]-188
+5789: (0f) r5 += r4                   ; frame2: R4=1 R5=fp[1]-187
+; unsafe { *s.add(i) = b } @ lib.rs:102
+5790: (73) *(u8 *)(r5 +0) = r2        ; frame2: R2=0 R5=fp[1]-187
+; intrinsics::unchecked_add(self, rhs) @ uint_macros.rs:1037
+5791: (07) r4 += 1                    ; frame2: R4=2
+; if self.start < self.end { @ range.rs:1103
+5792: (2d) if r3 > r4 goto pc-5       ; frame2: R3=16 R4=2
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+5788: (bf) r5 = r1                    ; frame2: R1=fp[1]-188 R5=fp[1]-188
+5789: (0f) r5 += r4                   ; frame2: R4=2 R5=fp[1]-186
+; unsafe { *s.add(i) = b } @ lib.rs:102
+5790: (73) *(u8 *)(r5 +0) = r2        ; frame2: R2=0 R5=fp[1]-186
+; intrinsics::unchecked_add(self, rhs) @ uint_macros.rs:1037
+5791: (07) r4 += 1                    ; frame2: R4=3
+; if self.start < self.end { @ range.rs:1103
+5792: (2d) if r3 > r4 goto pc-5       ; frame2: R3=16 R4=3
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+5788: (bf) r5 = r1                    ; frame2: R1=fp[1]-188 R5=fp[1]-188
+5789: (0f) r5 += r4                   ; frame2: R4=3 R5=fp[1]-185
+; unsafe { *s.add(i) = b } @ lib.rs:102
+5790: (73) *(u8 *)(r5 +0) = r2        ; frame2: R2=0 R5=fp[1]-185
+; intrinsics::unchecked_add(self, rhs) @ uint_macros.rs:1037
+5791: (07) r4 += 1                    ; frame2: R4=4
+; if self.start < self.end { @ range.rs:1103
+5792: (2d) if r3 > r4 goto pc-5       ; frame2: R3=16 R4=4
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+5788: (bf) r5 = r1                    ; frame2: R1=fp[1]-188 R5=fp[1]-188
+5789: (0f) r5 += r4                   ; frame2: R4=4 R5=fp[1]-184
+; unsafe { *s.add(i) = b } @ lib.rs:102
+5790: (73) *(u8 *)(r5 +0) = r2        ; frame2: R2=0 R5=fp[1]-184
+; intrinsics::unchecked_add(self, rhs) @ uint_macros.rs:1037
+5791: (07) r4 += 1                    ; frame2: R4=5
+; if self.start < self.end { @ range.rs:1103
+5792: (2d) if r3 > r4 goto pc-5       ; frame2: R3=16 R4=5
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+5788: (bf) r5 = r1                    ; frame2: R1=fp[1]-188 R5=fp[1]-188
+5789: (0f) r5 += r4                   ; frame2: R4=5 R5=fp[1]-183
+; unsafe { *s.add(i) = b } @ lib.rs:102
+5790: (73) *(u8 *)(r5 +0) = r2        ; frame2: R2=0 R5=fp[1]-183
+; intrinsics::unchecked_add(self, rhs) @ uint_macros.rs:1037
+5791: (07) r4 += 1                    ; frame2: R4=6
+; if self.start < self.end { @ range.rs:1103
+5792: (2d) if r3 > r4 goto pc-5       ; frame2: R3=16 R4=6
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+5788: (bf) r5 = r1                    ; frame2: R1=fp[1]-188 R5=fp[1]-188
+5789: (0f) r5 += r4                   ; frame2: R4=6 R5=fp[1]-182
+; unsafe { *s.add(i) = b } @ lib.rs:102
+5790: (73) *(u8 *)(r5 +0) = r2        ; frame2: R2=0 R5=fp[1]-182
+; intrinsics::unchecked_add(self, rhs) @ uint_macros.rs:1037
+5791: (07) r4 += 1                    ; frame2: R4=7
+; if self.start < self.end { @ range.rs:1103
+5792: (2d) if r3 > r4 goto pc-5       ; frame2: R3=16 R4=7
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+5788: (bf) r5 = r1                    ; frame2: R1=fp[1]-188 R5=fp[1]-188
+5789: (0f) r5 += r4                   ; frame2: R4=7 R5=fp[1]-181
+; unsafe { *s.add(i) = b } @ lib.rs:102
+5790: (73) *(u8 *)(r5 +0) = r2        ; frame2: R2=0 R5=fp[1]-181
+; intrinsics::unchecked_add(self, rhs) @ uint_macros.rs:1037
+5791: (07) r4 += 1                    ; frame2: R4=8
+; if self.start < self.end { @ range.rs:1103
+5792: (2d) if r3 > r4 goto pc-5       ; frame2: R3=16 R4=8
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+5788: (bf) r5 = r1                    ; frame2: R1=fp[1]-188 R5=fp[1]-188
+5789: (0f) r5 += r4                   ; frame2: R4=8 R5=fp[1]-180
+; unsafe { *s.add(i) = b } @ lib.rs:102
+5790: (73) *(u8 *)(r5 +0) = r2        ; frame2: R2=0 R5=fp[1]-180
+; intrinsics::unchecked_add(self, rhs) @ uint_macros.rs:1037
+5791: (07) r4 += 1                    ; frame2: R4=9
+; if self.start < self.end { @ range.rs:1103
+5792: (2d) if r3 > r4 goto pc-5       ; frame2: R3=16 R4=9
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+5788: (bf) r5 = r1                    ; frame2: R1=fp[1]-188 R5=fp[1]-188
+5789: (0f) r5 += r4                   ; frame2: R4=9 R5=fp[1]-179
+; unsafe { *s.add(i) = b } @ lib.rs:102
+5790: (73) *(u8 *)(r5 +0) = r2        ; frame2: R2=0 R5=fp[1]-179
+; intrinsics::unchecked_add(self, rhs) @ uint_macros.rs:1037
+5791: (07) r4 += 1                    ; frame2: R4=10
+; if self.start < self.end { @ range.rs:1103
+5792: (2d) if r3 > r4 goto pc-5       ; frame2: R3=16 R4=10
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+5788: (bf) r5 = r1                    ; frame2: R1=fp[1]-188 R5=fp[1]-188
+5789: (0f) r5 += r4                   ; frame2: R4=10 R5=fp[1]-178
+; unsafe { *s.add(i) = b } @ lib.rs:102
+5790: (73) *(u8 *)(r5 +0) = r2        ; frame2: R2=0 R5=fp[1]-178
+; intrinsics::unchecked_add(self, rhs) @ uint_macros.rs:1037
+5791: (07) r4 += 1                    ; frame2: R4=11
+; if self.start < self.end { @ range.rs:1103
+5792: (2d) if r3 > r4 goto pc-5       ; frame2: R3=16 R4=11
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+5788: (bf) r5 = r1                    ; frame2: R1=fp[1]-188 R5=fp[1]-188
+5789: (0f) r5 += r4                   ; frame2: R4=11 R5=fp[1]-177
+; unsafe { *s.add(i) = b } @ lib.rs:102
+5790: (73) *(u8 *)(r5 +0) = r2        ; frame2: R2=0 R5=fp[1]-177
+; intrinsics::unchecked_add(self, rhs) @ uint_macros.rs:1037
+5791: (07) r4 += 1                    ; frame2: R4=12
+; if self.start < self.end { @ range.rs:1103
+5792: (2d) if r3 > r4 goto pc-5       ; frame2: R3=16 R4=12
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+5788: (bf) r5 = r1                    ; frame2: R1=fp[1]-188 R5=fp[1]-188
+5789: (0f) r5 += r4                   ; frame2: R4=12 R5=fp[1]-176
+; unsafe { *s.add(i) = b } @ lib.rs:102
+5790: (73) *(u8 *)(r5 +0) = r2        ; frame2: R2=0 R5=fp[1]-176
+; intrinsics::unchecked_add(self, rhs) @ uint_macros.rs:1037
+5791: (07) r4 += 1                    ; frame2: R4=13
+; if self.start < self.end { @ range.rs:1103
+5792: (2d) if r3 > r4 goto pc-5       ; frame2: R3=16 R4=13
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+5788: (bf) r5 = r1                    ; frame2: R1=fp[1]-188 R5=fp[1]-188
+5789: (0f) r5 += r4                   ; frame2: R4=13 R5=fp[1]-175
+; unsafe { *s.add(i) = b } @ lib.rs:102
+5790: (73) *(u8 *)(r5 +0) = r2        ; frame2: R2=0 R5=fp[1]-175
+; intrinsics::unchecked_add(self, rhs) @ uint_macros.rs:1037
+5791: (07) r4 += 1                    ; frame2: R4=14
+; if self.start < self.end { @ range.rs:1103
+5792: (2d) if r3 > r4 goto pc-5       ; frame2: R3=16 R4=14
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+5788: (bf) r5 = r1                    ; frame2: R1=fp[1]-188 R5=fp[1]-188
+5789: (0f) r5 += r4                   ; frame2: R4=14 R5=fp[1]-174
+; unsafe { *s.add(i) = b } @ lib.rs:102
+5790: (73) *(u8 *)(r5 +0) = r2        ; frame2: R2=0 R5=fp[1]-174
+; intrinsics::unchecked_add(self, rhs) @ uint_macros.rs:1037
+5791: (07) r4 += 1                    ; frame2: R4=15
+; if self.start < self.end { @ range.rs:1103
+5792: (2d) if r3 > r4 goto pc-5       ; frame2: R3=16 R4=15
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+5788: (bf) r5 = r1                    ; frame2: R1=fp[1]-188 R5=fp[1]-188
+5789: (0f) r5 += r4                   ; frame2: R4=15 R5=fp[1]-173
+; unsafe { *s.add(i) = b } @ lib.rs:102
+5790: (73) *(u8 *)(r5 +0) = r2        ; frame2: R2=0 R5=fp[1]-173
+; intrinsics::unchecked_add(self, rhs) @ uint_macros.rs:1037
+5791: (07) r4 += 1                    ; frame2: R4=16
+; if self.start < self.end { @ range.rs:1103
+5792: (2d) if r3 > r4 goto pc-5       ; frame2: R3=16 R4=16
+; } @ lib.rs:104
+5793: (95) exit
+returning from callee:
+ frame2: R10=fp0
+to caller at 254:
+ frame1: R6=pkt_end() R7=pkt(r=58) R8=scalar(umin=14) R9=18 R10=fp0 fp-176=????000m fp-184=0000000m fp-192=0000???? fp-200=58 fp-208=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-216=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-232=ctx() fp-240=24 fp-248=22 fp-256=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-264=scalar(smin=umin=smin32=umin32=2,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+; let mut src6 = [0u8; 16]; @ main.rs:451
+254: (bf) r1 = r10                    ; frame1: R1=fp0 R10=fp0
+255: (07) r1 += -172                  ; frame1: R1=fp-172
+; let mut dst6 = [0u8; 16]; @ main.rs:452
+256: (b7) r2 = 0                      ; frame1: R2=0
+257: (b7) r3 = 16                     ; frame1: R3=16
+258: (85) call pc+5527
+caller:
+ frame1: R6=pkt_end() R7=pkt(r=58) R8=scalar(umin=14) R9=18 R10=fp0 fp-176=????000m fp-184=0000000m fp-192=0000???? fp-200=58 fp-208=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-216=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-232=ctx() fp-240=24 fp-248=22 fp-256=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-264=scalar(smin=umin=smin32=umin32=2,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+callee:
+ frame2: R1=fp[1]-172 R2=0 R3=16 R10=fp0
+5786: frame2: R1=fp[1]-172 R2=0 R3=16 R10=fp0
+; if self.start < self.end { @ range.rs:1103
+5786: (15) if r3 == 0x0 goto pc+6     ; frame2: R3=16
+5787: (b7) r4 = 0                     ; frame2: R4=0
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+5788: (bf) r5 = r1                    ; frame2: R1=fp[1]-172 R5=fp[1]-172
+5789: (0f) r5 += r4                   ; frame2: R4=0 R5=fp[1]-172
+; unsafe { *s.add(i) = b } @ lib.rs:102
+5790: (73) *(u8 *)(r5 +0) = r2        ; frame2: R2=0 R5=fp[1]-172
+; intrinsics::unchecked_add(self, rhs) @ uint_macros.rs:1037
+5791: (07) r4 += 1                    ; frame2: R4=1
+; if self.start < self.end { @ range.rs:1103
+5792: (2d) if r3 > r4 goto pc-5       ; frame2: R3=16 R4=1
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+5788: (bf) r5 = r1                    ; frame2: R1=fp[1]-172 R5=fp[1]-172
+5789: (0f) r5 += r4                   ; frame2: R4=1 R5=fp[1]-171
+; unsafe { *s.add(i) = b } @ lib.rs:102
+5790: (73) *(u8 *)(r5 +0) = r2        ; frame2: R2=0 R5=fp[1]-171
+; intrinsics::unchecked_add(self, rhs) @ uint_macros.rs:1037
+5791: (07) r4 += 1                    ; frame2: R4=2
+; if self.start < self.end { @ range.rs:1103
+5792: (2d) if r3 > r4 goto pc-5       ; frame2: R3=16 R4=2
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+5788: (bf) r5 = r1                    ; frame2: R1=fp[1]-172 R5=fp[1]-172
+5789: (0f) r5 += r4                   ; frame2: R4=2 R5=fp[1]-170
+; unsafe { *s.add(i) = b } @ lib.rs:102
+5790: (73) *(u8 *)(r5 +0) = r2        ; frame2: R2=0 R5=fp[1]-170
+; intrinsics::unchecked_add(self, rhs) @ uint_macros.rs:1037
+5791: (07) r4 += 1                    ; frame2: R4=3
+; if self.start < self.end { @ range.rs:1103
+5792: (2d) if r3 > r4 goto pc-5       ; frame2: R3=16 R4=3
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+5788: (bf) r5 = r1                    ; frame2: R1=fp[1]-172 R5=fp[1]-172
+5789: (0f) r5 += r4                   ; frame2: R4=3 R5=fp[1]-169
+; unsafe { *s.add(i) = b } @ lib.rs:102
+5790: (73) *(u8 *)(r5 +0) = r2        ; frame2: R2=0 R5=fp[1]-169
+; intrinsics::unchecked_add(self, rhs) @ uint_macros.rs:1037
+5791: (07) r4 += 1                    ; frame2: R4=4
+; if self.start < self.end { @ range.rs:1103
+5792: (2d) if r3 > r4 goto pc-5       ; frame2: R3=16 R4=4
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+5788: (bf) r5 = r1                    ; frame2: R1=fp[1]-172 R5=fp[1]-172
+5789: (0f) r5 += r4                   ; frame2: R4=4 R5=fp[1]-168
+; unsafe { *s.add(i) = b } @ lib.rs:102
+5790: (73) *(u8 *)(r5 +0) = r2        ; frame2: R2=0 R5=fp[1]-168
+; intrinsics::unchecked_add(self, rhs) @ uint_macros.rs:1037
+5791: (07) r4 += 1                    ; frame2: R4=5
+; if self.start < self.end { @ range.rs:1103
+5792: (2d) if r3 > r4 goto pc-5       ; frame2: R3=16 R4=5
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+5788: (bf) r5 = r1                    ; frame2: R1=fp[1]-172 R5=fp[1]-172
+5789: (0f) r5 += r4                   ; frame2: R4=5 R5=fp[1]-167
+; unsafe { *s.add(i) = b } @ lib.rs:102
+5790: (73) *(u8 *)(r5 +0) = r2        ; frame2: R2=0 R5=fp[1]-167
+; intrinsics::unchecked_add(self, rhs) @ uint_macros.rs:1037
+5791: (07) r4 += 1                    ; frame2: R4=6
+; if self.start < self.end { @ range.rs:1103
+5792: (2d) if r3 > r4 goto pc-5       ; frame2: R3=16 R4=6
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+5788: (bf) r5 = r1                    ; frame2: R1=fp[1]-172 R5=fp[1]-172
+5789: (0f) r5 += r4                   ; frame2: R4=6 R5=fp[1]-166
+; unsafe { *s.add(i) = b } @ lib.rs:102
+5790: (73) *(u8 *)(r5 +0) = r2        ; frame2: R2=0 R5=fp[1]-166
+; intrinsics::unchecked_add(self, rhs) @ uint_macros.rs:1037
+5791: (07) r4 += 1                    ; frame2: R4=7
+; if self.start < self.end { @ range.rs:1103
+5792: (2d) if r3 > r4 goto pc-5       ; frame2: R3=16 R4=7
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+5788: (bf) r5 = r1                    ; frame2: R1=fp[1]-172 R5=fp[1]-172
+5789: (0f) r5 += r4                   ; frame2: R4=7 R5=fp[1]-165
+; unsafe { *s.add(i) = b } @ lib.rs:102
+5790: (73) *(u8 *)(r5 +0) = r2        ; frame2: R2=0 R5=fp[1]-165
+; intrinsics::unchecked_add(self, rhs) @ uint_macros.rs:1037
+5791: (07) r4 += 1                    ; frame2: R4=8
+; if self.start < self.end { @ range.rs:1103
+5792: (2d) if r3 > r4 goto pc-5       ; frame2: R3=16 R4=8
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+5788: (bf) r5 = r1                    ; frame2: R1=fp[1]-172 R5=fp[1]-172
+5789: (0f) r5 += r4                   ; frame2: R4=8 R5=fp[1]-164
+; unsafe { *s.add(i) = b } @ lib.rs:102
+5790: (73) *(u8 *)(r5 +0) = r2        ; frame2: R2=0 R5=fp[1]-164
+; intrinsics::unchecked_add(self, rhs) @ uint_macros.rs:1037
+5791: (07) r4 += 1                    ; frame2: R4=9
+; if self.start < self.end { @ range.rs:1103
+5792: (2d) if r3 > r4 goto pc-5       ; frame2: R3=16 R4=9
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+5788: (bf) r5 = r1                    ; frame2: R1=fp[1]-172 R5=fp[1]-172
+5789: (0f) r5 += r4                   ; frame2: R4=9 R5=fp[1]-163
+; unsafe { *s.add(i) = b } @ lib.rs:102
+5790: (73) *(u8 *)(r5 +0) = r2        ; frame2: R2=0 R5=fp[1]-163
+; intrinsics::unchecked_add(self, rhs) @ uint_macros.rs:1037
+5791: (07) r4 += 1                    ; frame2: R4=10
+; if self.start < self.end { @ range.rs:1103
+5792: (2d) if r3 > r4 goto pc-5       ; frame2: R3=16 R4=10
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+5788: (bf) r5 = r1                    ; frame2: R1=fp[1]-172 R5=fp[1]-172
+5789: (0f) r5 += r4                   ; frame2: R4=10 R5=fp[1]-162
+; unsafe { *s.add(i) = b } @ lib.rs:102
+5790: (73) *(u8 *)(r5 +0) = r2        ; frame2: R2=0 R5=fp[1]-162
+; intrinsics::unchecked_add(self, rhs) @ uint_macros.rs:1037
+5791: (07) r4 += 1                    ; frame2: R4=11
+; if self.start < self.end { @ range.rs:1103
+5792: (2d) if r3 > r4 goto pc-5       ; frame2: R3=16 R4=11
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+5788: (bf) r5 = r1                    ; frame2: R1=fp[1]-172 R5=fp[1]-172
+5789: (0f) r5 += r4                   ; frame2: R4=11 R5=fp[1]-161
+; unsafe { *s.add(i) = b } @ lib.rs:102
+5790: (73) *(u8 *)(r5 +0) = r2        ; frame2: R2=0 R5=fp[1]-161
+; intrinsics::unchecked_add(self, rhs) @ uint_macros.rs:1037
+5791: (07) r4 += 1                    ; frame2: R4=12
+; if self.start < self.end { @ range.rs:1103
+5792: (2d) if r3 > r4 goto pc-5       ; frame2: R3=16 R4=12
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+5788: (bf) r5 = r1                    ; frame2: R1=fp[1]-172 R5=fp[1]-172
+5789: (0f) r5 += r4                   ; frame2: R4=12 R5=fp[1]-160
+; unsafe { *s.add(i) = b } @ lib.rs:102
+5790: (73) *(u8 *)(r5 +0) = r2        ; frame2: R2=0 R5=fp[1]-160
+; intrinsics::unchecked_add(self, rhs) @ uint_macros.rs:1037
+5791: (07) r4 += 1                    ; frame2: R4=13
+; if self.start < self.end { @ range.rs:1103
+5792: (2d) if r3 > r4 goto pc-5       ; frame2: R3=16 R4=13
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+5788: (bf) r5 = r1                    ; frame2: R1=fp[1]-172 R5=fp[1]-172
+5789: (0f) r5 += r4                   ; frame2: R4=13 R5=fp[1]-159
+; unsafe { *s.add(i) = b } @ lib.rs:102
+5790: (73) *(u8 *)(r5 +0) = r2        ; frame2: R2=0 R5=fp[1]-159
+; intrinsics::unchecked_add(self, rhs) @ uint_macros.rs:1037
+5791: (07) r4 += 1                    ; frame2: R4=14
+; if self.start < self.end { @ range.rs:1103
+5792: (2d) if r3 > r4 goto pc-5       ; frame2: R3=16 R4=14
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+5788: (bf) r5 = r1                    ; frame2: R1=fp[1]-172 R5=fp[1]-172
+5789: (0f) r5 += r4                   ; frame2: R4=14 R5=fp[1]-158
+; unsafe { *s.add(i) = b } @ lib.rs:102
+5790: (73) *(u8 *)(r5 +0) = r2        ; frame2: R2=0 R5=fp[1]-158
+; intrinsics::unchecked_add(self, rhs) @ uint_macros.rs:1037
+5791: (07) r4 += 1                    ; frame2: R4=15
+; if self.start < self.end { @ range.rs:1103
+5792: (2d) if r3 > r4 goto pc-5       ; frame2: R3=16 R4=15
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+5788: (bf) r5 = r1                    ; frame2: R1=fp[1]-172 R5=fp[1]-172
+5789: (0f) r5 += r4                   ; frame2: R4=15 R5=fp[1]-157
+; unsafe { *s.add(i) = b } @ lib.rs:102
+5790: (73) *(u8 *)(r5 +0) = r2        ; frame2: R2=0 R5=fp[1]-157
+; intrinsics::unchecked_add(self, rhs) @ uint_macros.rs:1037
+5791: (07) r4 += 1                    ; frame2: R4=16
+; if self.start < self.end { @ range.rs:1103
+5792: (2d) if r3 > r4 goto pc-5       ; frame2: R3=16 R4=16
+; } @ lib.rs:104
+5793: (95) exit
+returning from callee:
+ frame2: R10=fp0
+to caller at 259:
+ frame1: R6=pkt_end() R7=pkt(r=58) R8=scalar(umin=14) R9=18 R10=fp0 fp-160=????000m fp-168=0000000m fp-176=0000000m fp-184=0000000m fp-192=0000???? fp-200=58 fp-208=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-216=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-232=ctx() fp-240=24 fp-248=22 fp-256=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-264=scalar(smin=umin=smin32=umin32=2,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+; let mut dst6 = [0u8; 16]; @ main.rs:452
+259: (7b) *(u64 *)(r10 -224) = r9     ; frame1: R9=18 R10=fp0 fp-224=18
+; if copy16(data, data_end, l3 + 8, src6.as_mut_ptr(), 16).is_err() @ main.rs:453
+260: (07) r9 += 8                     ; frame1: R9=26
+; let s = zext(src); @ parse.rs:115
+261: (63) *(u32 *)(r10 -120) = r9     ; frame1: R9=26 R10=fp0 fp-120=????26
+; intrinsics::volatile_load(src) @ mod.rs:2163
+262: (61) r1 = *(u32 *)(r10 -120)     ; frame1: R1=26 R10=fp0 fp-120=????26
+; let nn = zext(n); @ parse.rs:116
+263: (b7) r2 = 16                     ; frame1: R2=16
+264: (63) *(u32 *)(r10 -120) = r2     ; frame1: R2=16 R10=fp0 fp-120=????16
+; intrinsics::volatile_load(src) @ mod.rs:2163
+265: (61) r2 = *(u32 *)(r10 -120)     ; frame1: R2=16 R10=fp0
+; if nn > 16 { @ parse.rs:117
+266: (25) if r2 > 0x10 goto pc+153    ; frame1: R2=16
+; let p = (data + s) as *const u8; @ parse.rs:120
+267: (0f) r1 += r7                    ; frame1: R1=pkt(r=58,imm=26) R7=pkt(r=58)
+; unsafe { intrinsics::offset(self, count) } @ const_ptr.rs:872
+268: (bf) r3 = r1                     ; frame1: R1=pkt(r=58,imm=26) R3=pkt(r=58,imm=26)
+269: (0f) r3 += r2                    ; frame1: R2=16 R3=pkt(r=58,imm=42)
+; if unsafe { p.add(nn) } > end { @ parse.rs:122
+270: (2d) if r3 > r6 goto pc+149      ; frame1: R3=pkt(r=58,imm=42) R6=pkt_end()
+; while i < nn { @ parse.rs:127
+271: (15) if r2 == 0x0 goto pc+13     ; frame1: R2=16
+272: (b7) r3 = 0                      ; frame1: R3=0
+; unsafe { intrinsics::offset(self, count) } @ const_ptr.rs:872
+273: (bf) r4 = r1                     ; frame1: R1=pkt(r=58,imm=26) R4=pkt(r=58,imm=26)
+274: (0f) r4 += r3                    ; frame1: R3=0 R4=pkt(r=58,imm=26)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:128
+275: (bf) r5 = r4                     ; frame1: R4=pkt(r=58,imm=26) R5=pkt(r=58,imm=26)
+276: (07) r5 += 1                     ; frame1: R5=pkt(r=58,imm=27)
+277: (2d) if r5 > r6 goto pc+142      ; frame1: R5=pkt(r=58,imm=27) R6=pkt_end()
+278: (bf) r5 = r10                    ; frame1: R5=fp0 R10=fp0
+279: (07) r5 += -188                  ; frame1: R5=fp-188
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+280: (0f) r5 += r3                    ; frame1: R3=0 R5=fp-188
+; *dst.add(i) = *p_cur; @ parse.rs:132
+281: (71) r4 = *(u8 *)(r4 +0)         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+282: (73) *(u8 *)(r5 +0) = r4         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R5=fp-188 fp-192=000m????
+; i += 1; @ parse.rs:135
+283: (07) r3 += 1                     ; frame1: R3=1
+; while i < nn { @ parse.rs:127
+284: (2d) if r2 > r3 goto pc-12       ; frame1: R2=16 R3=1
+; unsafe { intrinsics::offset(self, count) } @ const_ptr.rs:872
+273: (bf) r4 = r1                     ; frame1: R1=pkt(r=58,imm=26) R4=pkt(r=58,imm=26)
+274: (0f) r4 += r3                    ; frame1: R3=1 R4=pkt(r=58,imm=27)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:128
+275: (bf) r5 = r4                     ; frame1: R4=pkt(r=58,imm=27) R5=pkt(r=58,imm=27)
+276: (07) r5 += 1                     ; frame1: R5=pkt(r=58,imm=28)
+277: (2d) if r5 > r6 goto pc+142      ; frame1: R5=pkt(r=58,imm=28) R6=pkt_end()
+278: (bf) r5 = r10                    ; frame1: R5=fp0 R10=fp0
+279: (07) r5 += -188                  ; frame1: R5=fp-188
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+280: (0f) r5 += r3                    ; frame1: R3=1 R5=fp-187
+; *dst.add(i) = *p_cur; @ parse.rs:132
+281: (71) r4 = *(u8 *)(r4 +0)         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+282: (73) *(u8 *)(r5 +0) = r4         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R5=fp-187 fp-192=00mm????
+; i += 1; @ parse.rs:135
+283: (07) r3 += 1                     ; frame1: R3=2
+; while i < nn { @ parse.rs:127
+284: (2d) if r2 > r3 goto pc-12       ; frame1: R2=16 R3=2
+; unsafe { intrinsics::offset(self, count) } @ const_ptr.rs:872
+273: (bf) r4 = r1                     ; frame1: R1=pkt(r=58,imm=26) R4=pkt(r=58,imm=26)
+274: (0f) r4 += r3                    ; frame1: R3=2 R4=pkt(r=58,imm=28)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:128
+275: (bf) r5 = r4                     ; frame1: R4=pkt(r=58,imm=28) R5=pkt(r=58,imm=28)
+276: (07) r5 += 1                     ; frame1: R5=pkt(r=58,imm=29)
+277: (2d) if r5 > r6 goto pc+142      ; frame1: R5=pkt(r=58,imm=29) R6=pkt_end()
+278: (bf) r5 = r10                    ; frame1: R5=fp0 R10=fp0
+279: (07) r5 += -188                  ; frame1: R5=fp-188
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+280: (0f) r5 += r3                    ; frame1: R3=2 R5=fp-186
+; *dst.add(i) = *p_cur; @ parse.rs:132
+281: (71) r4 = *(u8 *)(r4 +0)         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+282: (73) *(u8 *)(r5 +0) = r4         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R5=fp-186 fp-192=0mmm????
+; i += 1; @ parse.rs:135
+283: (07) r3 += 1                     ; frame1: R3=3
+; while i < nn { @ parse.rs:127
+284: (2d) if r2 > r3 goto pc-12       ; frame1: R2=16 R3=3
+; unsafe { intrinsics::offset(self, count) } @ const_ptr.rs:872
+273: (bf) r4 = r1                     ; frame1: R1=pkt(r=58,imm=26) R4=pkt(r=58,imm=26)
+274: (0f) r4 += r3                    ; frame1: R3=3 R4=pkt(r=58,imm=29)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:128
+275: (bf) r5 = r4                     ; frame1: R4=pkt(r=58,imm=29) R5=pkt(r=58,imm=29)
+276: (07) r5 += 1                     ; frame1: R5=pkt(r=58,imm=30)
+277: (2d) if r5 > r6 goto pc+142      ; frame1: R5=pkt(r=58,imm=30) R6=pkt_end()
+278: (bf) r5 = r10                    ; frame1: R5=fp0 R10=fp0
+279: (07) r5 += -188                  ; frame1: R5=fp-188
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+280: (0f) r5 += r3                    ; frame1: R3=3 R5=fp-185
+; *dst.add(i) = *p_cur; @ parse.rs:132
+281: (71) r4 = *(u8 *)(r4 +0)         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+282: (73) *(u8 *)(r5 +0) = r4         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R5=fp-185 fp-192=mmmm????
+; i += 1; @ parse.rs:135
+283: (07) r3 += 1                     ; frame1: R3=4
+; while i < nn { @ parse.rs:127
+284: (2d) if r2 > r3 goto pc-12       ; frame1: R2=16 R3=4
+; unsafe { intrinsics::offset(self, count) } @ const_ptr.rs:872
+273: (bf) r4 = r1                     ; frame1: R1=pkt(r=58,imm=26) R4=pkt(r=58,imm=26)
+274: (0f) r4 += r3                    ; frame1: R3=4 R4=pkt(r=58,imm=30)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:128
+275: (bf) r5 = r4                     ; frame1: R4=pkt(r=58,imm=30) R5=pkt(r=58,imm=30)
+276: (07) r5 += 1                     ; frame1: R5=pkt(r=58,imm=31)
+277: (2d) if r5 > r6 goto pc+142      ; frame1: R5=pkt(r=58,imm=31) R6=pkt_end()
+278: (bf) r5 = r10                    ; frame1: R5=fp0 R10=fp0
+279: (07) r5 += -188                  ; frame1: R5=fp-188
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+280: (0f) r5 += r3                    ; frame1: R3=4 R5=fp-184
+; *dst.add(i) = *p_cur; @ parse.rs:132
+281: (71) r4 = *(u8 *)(r4 +0)         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+282: (73) *(u8 *)(r5 +0) = r4         ; frame1: R4=scalar(id=9,smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R5=fp-184 fp-184=0000000scalar(id=9,smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+; i += 1; @ parse.rs:135
+283: (07) r3 += 1                     ; frame1: R3=5
+; while i < nn { @ parse.rs:127
+284: (2d) if r2 > r3 goto pc-12       ; frame1: R2=16 R3=5
+; unsafe { intrinsics::offset(self, count) } @ const_ptr.rs:872
+273: (bf) r4 = r1                     ; frame1: R1=pkt(r=58,imm=26) R4=pkt(r=58,imm=26)
+274: (0f) r4 += r3                    ; frame1: R3=5 R4=pkt(r=58,imm=31)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:128
+275: (bf) r5 = r4                     ; frame1: R4=pkt(r=58,imm=31) R5=pkt(r=58,imm=31)
+276: (07) r5 += 1                     ; frame1: R5=pkt(r=58,imm=32)
+277: (2d) if r5 > r6 goto pc+142      ; frame1: R5=pkt(r=58,imm=32) R6=pkt_end()
+278: (bf) r5 = r10                    ; frame1: R5=fp0 R10=fp0
+279: (07) r5 += -188                  ; frame1: R5=fp-188
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+280: (0f) r5 += r3                    ; frame1: R3=5 R5=fp-183
+; *dst.add(i) = *p_cur; @ parse.rs:132
+281: (71) r4 = *(u8 *)(r4 +0)         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+282: (73) *(u8 *)(r5 +0) = r4         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R5=fp-183 fp-184=mmmmmmmm
+; i += 1; @ parse.rs:135
+283: (07) r3 += 1                     ; frame1: R3=6
+; while i < nn { @ parse.rs:127
+284: (2d) if r2 > r3 goto pc-12       ; frame1: R2=16 R3=6
+; unsafe { intrinsics::offset(self, count) } @ const_ptr.rs:872
+273: (bf) r4 = r1                     ; frame1: R1=pkt(r=58,imm=26) R4=pkt(r=58,imm=26)
+274: (0f) r4 += r3                    ; frame1: R3=6 R4=pkt(r=58,imm=32)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:128
+275: (bf) r5 = r4                     ; frame1: R4=pkt(r=58,imm=32) R5=pkt(r=58,imm=32)
+276: (07) r5 += 1                     ; frame1: R5=pkt(r=58,imm=33)
+277: (2d) if r5 > r6 goto pc+142      ; frame1: R5=pkt(r=58,imm=33) R6=pkt_end()
+278: (bf) r5 = r10                    ; frame1: R5=fp0 R10=fp0
+279: (07) r5 += -188                  ; frame1: R5=fp-188
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+280: (0f) r5 += r3                    ; frame1: R3=6 R5=fp-182
+; *dst.add(i) = *p_cur; @ parse.rs:132
+281: (71) r4 = *(u8 *)(r4 +0)         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+282: (73) *(u8 *)(r5 +0) = r4         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R5=fp-182 fp-184=mmmmmmmm
+; i += 1; @ parse.rs:135
+283: (07) r3 += 1                     ; frame1: R3=7
+; while i < nn { @ parse.rs:127
+284: (2d) if r2 > r3 goto pc-12       ; frame1: R2=16 R3=7
+; unsafe { intrinsics::offset(self, count) } @ const_ptr.rs:872
+273: (bf) r4 = r1                     ; frame1: R1=pkt(r=58,imm=26) R4=pkt(r=58,imm=26)
+274: (0f) r4 += r3                    ; frame1: R3=7 R4=pkt(r=58,imm=33)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:128
+275: (bf) r5 = r4                     ; frame1: R4=pkt(r=58,imm=33) R5=pkt(r=58,imm=33)
+276: (07) r5 += 1                     ; frame1: R5=pkt(r=58,imm=34)
+277: (2d) if r5 > r6 goto pc+142      ; frame1: R5=pkt(r=58,imm=34) R6=pkt_end()
+278: (bf) r5 = r10                    ; frame1: R5=fp0 R10=fp0
+279: (07) r5 += -188                  ; frame1: R5=fp-188
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+280: (0f) r5 += r3                    ; frame1: R3=7 R5=fp-181
+; *dst.add(i) = *p_cur; @ parse.rs:132
+281: (71) r4 = *(u8 *)(r4 +0)         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+282: (73) *(u8 *)(r5 +0) = r4         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R5=fp-181 fp-184=mmmmmmmm
+; i += 1; @ parse.rs:135
+283: (07) r3 += 1                     ; frame1: R3=8
+; while i < nn { @ parse.rs:127
+284: (2d) if r2 > r3 goto pc-12       ; frame1: R2=16 R3=8
+; unsafe { intrinsics::offset(self, count) } @ const_ptr.rs:872
+273: (bf) r4 = r1                     ; frame1: R1=pkt(r=58,imm=26) R4=pkt(r=58,imm=26)
+274: (0f) r4 += r3                    ; frame1: R3=8 R4=pkt(r=58,imm=34)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:128
+275: (bf) r5 = r4                     ; frame1: R4=pkt(r=58,imm=34) R5=pkt(r=58,imm=34)
+276: (07) r5 += 1                     ; frame1: R5=pkt(r=58,imm=35)
+277: (2d) if r5 > r6 goto pc+142      ; frame1: R5=pkt(r=58,imm=35) R6=pkt_end()
+278: (bf) r5 = r10                    ; frame1: R5=fp0 R10=fp0
+279: (07) r5 += -188                  ; frame1: R5=fp-188
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+280: (0f) r5 += r3                    ; frame1: R3=8 R5=fp-180
+; *dst.add(i) = *p_cur; @ parse.rs:132
+281: (71) r4 = *(u8 *)(r4 +0)         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+282: (73) *(u8 *)(r5 +0) = r4         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R5=fp-180 fp-184=mmmmmmmm
+; i += 1; @ parse.rs:135
+283: (07) r3 += 1                     ; frame1: R3=9
+; while i < nn { @ parse.rs:127
+284: (2d) if r2 > r3 goto pc-12       ; frame1: R2=16 R3=9
+; unsafe { intrinsics::offset(self, count) } @ const_ptr.rs:872
+273: (bf) r4 = r1                     ; frame1: R1=pkt(r=58,imm=26) R4=pkt(r=58,imm=26)
+274: (0f) r4 += r3                    ; frame1: R3=9 R4=pkt(r=58,imm=35)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:128
+275: (bf) r5 = r4                     ; frame1: R4=pkt(r=58,imm=35) R5=pkt(r=58,imm=35)
+276: (07) r5 += 1                     ; frame1: R5=pkt(r=58,imm=36)
+277: (2d) if r5 > r6 goto pc+142      ; frame1: R5=pkt(r=58,imm=36) R6=pkt_end()
+278: (bf) r5 = r10                    ; frame1: R5=fp0 R10=fp0
+279: (07) r5 += -188                  ; frame1: R5=fp-188
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+280: (0f) r5 += r3                    ; frame1: R3=9 R5=fp-179
+; *dst.add(i) = *p_cur; @ parse.rs:132
+281: (71) r4 = *(u8 *)(r4 +0)         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+282: (73) *(u8 *)(r5 +0) = r4         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R5=fp-179 fp-184=mmmmmmmm
+; i += 1; @ parse.rs:135
+283: (07) r3 += 1                     ; frame1: R3=10
+; while i < nn { @ parse.rs:127
+284: (2d) if r2 > r3 goto pc-12       ; frame1: R2=16 R3=10
+; unsafe { intrinsics::offset(self, count) } @ const_ptr.rs:872
+273: (bf) r4 = r1                     ; frame1: R1=pkt(r=58,imm=26) R4=pkt(r=58,imm=26)
+274: (0f) r4 += r3                    ; frame1: R3=10 R4=pkt(r=58,imm=36)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:128
+275: (bf) r5 = r4                     ; frame1: R4=pkt(r=58,imm=36) R5=pkt(r=58,imm=36)
+276: (07) r5 += 1                     ; frame1: R5=pkt(r=58,imm=37)
+277: (2d) if r5 > r6 goto pc+142      ; frame1: R5=pkt(r=58,imm=37) R6=pkt_end()
+278: (bf) r5 = r10                    ; frame1: R5=fp0 R10=fp0
+279: (07) r5 += -188                  ; frame1: R5=fp-188
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+280: (0f) r5 += r3                    ; frame1: R3=10 R5=fp-178
+; *dst.add(i) = *p_cur; @ parse.rs:132
+281: (71) r4 = *(u8 *)(r4 +0)         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+282: (73) *(u8 *)(r5 +0) = r4         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R5=fp-178 fp-184=mmmmmmmm
+; i += 1; @ parse.rs:135
+283: (07) r3 += 1                     ; frame1: R3=11
+; while i < nn { @ parse.rs:127
+284: (2d) if r2 > r3 goto pc-12       ; frame1: R2=16 R3=11
+; unsafe { intrinsics::offset(self, count) } @ const_ptr.rs:872
+273: (bf) r4 = r1                     ; frame1: R1=pkt(r=58,imm=26) R4=pkt(r=58,imm=26)
+274: (0f) r4 += r3                    ; frame1: R3=11 R4=pkt(r=58,imm=37)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:128
+275: (bf) r5 = r4                     ; frame1: R4=pkt(r=58,imm=37) R5=pkt(r=58,imm=37)
+276: (07) r5 += 1                     ; frame1: R5=pkt(r=58,imm=38)
+277: (2d) if r5 > r6 goto pc+142      ; frame1: R5=pkt(r=58,imm=38) R6=pkt_end()
+278: (bf) r5 = r10                    ; frame1: R5=fp0 R10=fp0
+279: (07) r5 += -188                  ; frame1: R5=fp-188
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+280: (0f) r5 += r3                    ; frame1: R3=11 R5=fp-177
+; *dst.add(i) = *p_cur; @ parse.rs:132
+281: (71) r4 = *(u8 *)(r4 +0)         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+282: (73) *(u8 *)(r5 +0) = r4         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R5=fp-177 fp-184=mmmmmmmm
+; i += 1; @ parse.rs:135
+283: (07) r3 += 1                     ; frame1: R3=12
+; while i < nn { @ parse.rs:127
+284: (2d) if r2 > r3 goto pc-12       ; frame1: R2=16 R3=12
+; unsafe { intrinsics::offset(self, count) } @ const_ptr.rs:872
+273: (bf) r4 = r1                     ; frame1: R1=pkt(r=58,imm=26) R4=pkt(r=58,imm=26)
+274: (0f) r4 += r3                    ; frame1: R3=12 R4=pkt(r=58,imm=38)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:128
+275: (bf) r5 = r4                     ; frame1: R4=pkt(r=58,imm=38) R5=pkt(r=58,imm=38)
+276: (07) r5 += 1                     ; frame1: R5=pkt(r=58,imm=39)
+277: (2d) if r5 > r6 goto pc+142      ; frame1: R5=pkt(r=58,imm=39) R6=pkt_end()
+278: (bf) r5 = r10                    ; frame1: R5=fp0 R10=fp0
+279: (07) r5 += -188                  ; frame1: R5=fp-188
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+280: (0f) r5 += r3                    ; frame1: R3=12 R5=fp-176
+; *dst.add(i) = *p_cur; @ parse.rs:132
+281: (71) r4 = *(u8 *)(r4 +0)         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+282: (73) *(u8 *)(r5 +0) = r4         ; frame1: R4=scalar(id=10,smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R5=fp-176 fp-176=0000000scalar(id=10,smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+; i += 1; @ parse.rs:135
+283: (07) r3 += 1                     ; frame1: R3=13
+; while i < nn { @ parse.rs:127
+284: (2d) if r2 > r3 goto pc-12       ; frame1: R2=16 R3=13
+; unsafe { intrinsics::offset(self, count) } @ const_ptr.rs:872
+273: (bf) r4 = r1                     ; frame1: R1=pkt(r=58,imm=26) R4=pkt(r=58,imm=26)
+274: (0f) r4 += r3                    ; frame1: R3=13 R4=pkt(r=58,imm=39)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:128
+275: (bf) r5 = r4                     ; frame1: R4=pkt(r=58,imm=39) R5=pkt(r=58,imm=39)
+276: (07) r5 += 1                     ; frame1: R5=pkt(r=58,imm=40)
+277: (2d) if r5 > r6 goto pc+142      ; frame1: R5=pkt(r=58,imm=40) R6=pkt_end()
+278: (bf) r5 = r10                    ; frame1: R5=fp0 R10=fp0
+279: (07) r5 += -188                  ; frame1: R5=fp-188
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+280: (0f) r5 += r3                    ; frame1: R3=13 R5=fp-175
+; *dst.add(i) = *p_cur; @ parse.rs:132
+281: (71) r4 = *(u8 *)(r4 +0)         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+282: (73) *(u8 *)(r5 +0) = r4         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R5=fp-175 fp-176=mmmmmmmm
+; i += 1; @ parse.rs:135
+283: (07) r3 += 1                     ; frame1: R3=14
+; while i < nn { @ parse.rs:127
+284: (2d) if r2 > r3 goto pc-12       ; frame1: R2=16 R3=14
+; unsafe { intrinsics::offset(self, count) } @ const_ptr.rs:872
+273: (bf) r4 = r1                     ; frame1: R1=pkt(r=58,imm=26) R4=pkt(r=58,imm=26)
+274: (0f) r4 += r3                    ; frame1: R3=14 R4=pkt(r=58,imm=40)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:128
+275: (bf) r5 = r4                     ; frame1: R4=pkt(r=58,imm=40) R5=pkt(r=58,imm=40)
+276: (07) r5 += 1                     ; frame1: R5=pkt(r=58,imm=41)
+277: (2d) if r5 > r6 goto pc+142      ; frame1: R5=pkt(r=58,imm=41) R6=pkt_end()
+278: (bf) r5 = r10                    ; frame1: R5=fp0 R10=fp0
+279: (07) r5 += -188                  ; frame1: R5=fp-188
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+280: (0f) r5 += r3                    ; frame1: R3=14 R5=fp-174
+; *dst.add(i) = *p_cur; @ parse.rs:132
+281: (71) r4 = *(u8 *)(r4 +0)         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+282: (73) *(u8 *)(r5 +0) = r4         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R5=fp-174 fp-176=mmmmmmmm
+; i += 1; @ parse.rs:135
+283: (07) r3 += 1                     ; frame1: R3=15
+; while i < nn { @ parse.rs:127
+284: (2d) if r2 > r3 goto pc-12       ; frame1: R2=16 R3=15
+; unsafe { intrinsics::offset(self, count) } @ const_ptr.rs:872
+273: (bf) r4 = r1                     ; frame1: R1=pkt(r=58,imm=26) R4=pkt(r=58,imm=26)
+274: (0f) r4 += r3                    ; frame1: R3=15 R4=pkt(r=58,imm=41)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:128
+275: (bf) r5 = r4                     ; frame1: R4=pkt(r=58,imm=41) R5=pkt(r=58,imm=41)
+276: (07) r5 += 1                     ; frame1: R5=pkt(r=58,imm=42)
+277: (2d) if r5 > r6 goto pc+142      ; frame1: R5=pkt(r=58,imm=42) R6=pkt_end()
+278: (bf) r5 = r10                    ; frame1: R5=fp0 R10=fp0
+279: (07) r5 += -188                  ; frame1: R5=fp-188
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+280: (0f) r5 += r3                    ; frame1: R3=15 R5=fp-173
+; *dst.add(i) = *p_cur; @ parse.rs:132
+281: (71) r4 = *(u8 *)(r4 +0)         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+282: (73) *(u8 *)(r5 +0) = r4         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R5=fp-173 fp-176=mmmmmmmm
+; i += 1; @ parse.rs:135
+283: (07) r3 += 1                     ; frame1: R3=16
+; while i < nn { @ parse.rs:127
+284: (2d) if r2 > r3 goto pc-12       ; frame1: R2=16 R3=16
+; || copy16(data, data_end, l3 + 24, dst6.as_mut_ptr(), 16).is_err() @ main.rs:454
+285: (79) r1 = *(u64 *)(r10 -224)     ; frame1: R1=18 R10=fp0 fp-224=18
+286: (07) r1 += 24                    ; frame1: R1=42
+287: (7b) *(u64 *)(r10 -272) = r1     ; frame1: R1=42 R10=fp0 fp-272=42
+; let s = zext(src); @ parse.rs:115
+288: (63) *(u32 *)(r10 -120) = r1     ; frame1: R1=42 R10=fp0 fp-120=????42
+; intrinsics::volatile_load(src) @ mod.rs:2163
+289: (61) r1 = *(u32 *)(r10 -120)     ; frame1: R1=42 R10=fp0 fp-120=????42
+290: (b7) r2 = 16                     ; frame1: R2=16
+; let nn = zext(n); @ parse.rs:116
+291: (63) *(u32 *)(r10 -120) = r2     ; frame1: R2=16 R10=fp0 fp-120=????16
+; intrinsics::volatile_load(src) @ mod.rs:2163
+292: (61) r2 = *(u32 *)(r10 -120)     ; frame1: R2=16 R10=fp0
+; if nn > 16 { @ parse.rs:117
+293: (25) if r2 > 0x10 goto pc+126    ; frame1: R2=16
+; let p = (data + s) as *const u8; @ parse.rs:120
+294: (0f) r1 += r7                    ; frame1: R1=pkt(r=58,imm=42) R7=pkt(r=58)
+; unsafe { intrinsics::offset(self, count) } @ const_ptr.rs:872
+295: (bf) r3 = r1                     ; frame1: R1=pkt(r=58,imm=42) R3=pkt(r=58,imm=42)
+296: (0f) r3 += r2                    ; frame1: R2=16 R3=pkt(r=58,imm=58)
+; if unsafe { p.add(nn) } > end { @ parse.rs:122
+297: (2d) if r3 > r6 goto pc+122      ; frame1: R3=pkt(r=58,imm=58) R6=pkt_end()
+; while i < nn { @ parse.rs:127
+298: (15) if r2 == 0x0 goto pc+13     ; frame1: R2=16
+299: (b7) r3 = 0                      ; frame1: R3=0
+; unsafe { intrinsics::offset(self, count) } @ const_ptr.rs:872
+300: (bf) r4 = r1                     ; frame1: R1=pkt(r=58,imm=42) R4=pkt(r=58,imm=42)
+301: (0f) r4 += r3                    ; frame1: R3=0 R4=pkt(r=58,imm=42)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:128
+302: (bf) r5 = r4                     ; frame1: R4=pkt(r=58,imm=42) R5=pkt(r=58,imm=42)
+303: (07) r5 += 1                     ; frame1: R5=pkt(r=58,imm=43)
+304: (2d) if r5 > r6 goto pc+115      ; frame1: R5=pkt(r=58,imm=43) R6=pkt_end()
+305: (bf) r5 = r10                    ; frame1: R5=fp0 R10=fp0
+306: (07) r5 += -172                  ; frame1: R5=fp-172
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+307: (0f) r5 += r3                    ; frame1: R3=0 R5=fp-172
+; *dst.add(i) = *p_cur; @ parse.rs:132
+308: (71) r4 = *(u8 *)(r4 +0)         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+309: (73) *(u8 *)(r5 +0) = r4         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R5=fp-172 fp-176=mmmmmmmm
+; i += 1; @ parse.rs:135
+310: (07) r3 += 1                     ; frame1: R3=1
+; while i < nn { @ parse.rs:127
+311: (2d) if r2 > r3 goto pc-12       ; frame1: R2=16 R3=1
+; unsafe { intrinsics::offset(self, count) } @ const_ptr.rs:872
+300: (bf) r4 = r1                     ; frame1: R1=pkt(r=58,imm=42) R4=pkt(r=58,imm=42)
+301: (0f) r4 += r3                    ; frame1: R3=1 R4=pkt(r=58,imm=43)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:128
+302: (bf) r5 = r4                     ; frame1: R4=pkt(r=58,imm=43) R5=pkt(r=58,imm=43)
+303: (07) r5 += 1                     ; frame1: R5=pkt(r=58,imm=44)
+304: (2d) if r5 > r6 goto pc+115      ; frame1: R5=pkt(r=58,imm=44) R6=pkt_end()
+305: (bf) r5 = r10                    ; frame1: R5=fp0 R10=fp0
+306: (07) r5 += -172                  ; frame1: R5=fp-172
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+307: (0f) r5 += r3                    ; frame1: R3=1 R5=fp-171
+; *dst.add(i) = *p_cur; @ parse.rs:132
+308: (71) r4 = *(u8 *)(r4 +0)         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+309: (73) *(u8 *)(r5 +0) = r4         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R5=fp-171 fp-176=mmmmmmmm
+; i += 1; @ parse.rs:135
+310: (07) r3 += 1                     ; frame1: R3=2
+; while i < nn { @ parse.rs:127
+311: (2d) if r2 > r3 goto pc-12       ; frame1: R2=16 R3=2
+; unsafe { intrinsics::offset(self, count) } @ const_ptr.rs:872
+300: (bf) r4 = r1                     ; frame1: R1=pkt(r=58,imm=42) R4=pkt(r=58,imm=42)
+301: (0f) r4 += r3                    ; frame1: R3=2 R4=pkt(r=58,imm=44)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:128
+302: (bf) r5 = r4                     ; frame1: R4=pkt(r=58,imm=44) R5=pkt(r=58,imm=44)
+303: (07) r5 += 1                     ; frame1: R5=pkt(r=58,imm=45)
+304: (2d) if r5 > r6 goto pc+115      ; frame1: R5=pkt(r=58,imm=45) R6=pkt_end()
+305: (bf) r5 = r10                    ; frame1: R5=fp0 R10=fp0
+306: (07) r5 += -172                  ; frame1: R5=fp-172
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+307: (0f) r5 += r3                    ; frame1: R3=2 R5=fp-170
+; *dst.add(i) = *p_cur; @ parse.rs:132
+308: (71) r4 = *(u8 *)(r4 +0)         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+309: (73) *(u8 *)(r5 +0) = r4         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R5=fp-170 fp-176=mmmmmmmm
+; i += 1; @ parse.rs:135
+310: (07) r3 += 1                     ; frame1: R3=3
+; while i < nn { @ parse.rs:127
+311: (2d) if r2 > r3 goto pc-12       ; frame1: R2=16 R3=3
+; unsafe { intrinsics::offset(self, count) } @ const_ptr.rs:872
+300: (bf) r4 = r1                     ; frame1: R1=pkt(r=58,imm=42) R4=pkt(r=58,imm=42)
+301: (0f) r4 += r3                    ; frame1: R3=3 R4=pkt(r=58,imm=45)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:128
+302: (bf) r5 = r4                     ; frame1: R4=pkt(r=58,imm=45) R5=pkt(r=58,imm=45)
+303: (07) r5 += 1                     ; frame1: R5=pkt(r=58,imm=46)
+304: (2d) if r5 > r6 goto pc+115      ; frame1: R5=pkt(r=58,imm=46) R6=pkt_end()
+305: (bf) r5 = r10                    ; frame1: R5=fp0 R10=fp0
+306: (07) r5 += -172                  ; frame1: R5=fp-172
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+307: (0f) r5 += r3                    ; frame1: R3=3 R5=fp-169
+; *dst.add(i) = *p_cur; @ parse.rs:132
+308: (71) r4 = *(u8 *)(r4 +0)         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+309: (73) *(u8 *)(r5 +0) = r4         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R5=fp-169 fp-176=mmmmmmmm
+; i += 1; @ parse.rs:135
+310: (07) r3 += 1                     ; frame1: R3=4
+; while i < nn { @ parse.rs:127
+311: (2d) if r2 > r3 goto pc-12       ; frame1: R2=16 R3=4
+; unsafe { intrinsics::offset(self, count) } @ const_ptr.rs:872
+300: (bf) r4 = r1                     ; frame1: R1=pkt(r=58,imm=42) R4=pkt(r=58,imm=42)
+301: (0f) r4 += r3                    ; frame1: R3=4 R4=pkt(r=58,imm=46)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:128
+302: (bf) r5 = r4                     ; frame1: R4=pkt(r=58,imm=46) R5=pkt(r=58,imm=46)
+303: (07) r5 += 1                     ; frame1: R5=pkt(r=58,imm=47)
+304: (2d) if r5 > r6 goto pc+115      ; frame1: R5=pkt(r=58,imm=47) R6=pkt_end()
+305: (bf) r5 = r10                    ; frame1: R5=fp0 R10=fp0
+306: (07) r5 += -172                  ; frame1: R5=fp-172
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+307: (0f) r5 += r3                    ; frame1: R3=4 R5=fp-168
+; *dst.add(i) = *p_cur; @ parse.rs:132
+308: (71) r4 = *(u8 *)(r4 +0)         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+309: (73) *(u8 *)(r5 +0) = r4         ; frame1: R4=scalar(id=11,smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R5=fp-168 fp-168=0000000scalar(id=11,smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+; i += 1; @ parse.rs:135
+310: (07) r3 += 1                     ; frame1: R3=5
+; while i < nn { @ parse.rs:127
+311: (2d) if r2 > r3 goto pc-12       ; frame1: R2=16 R3=5
+; unsafe { intrinsics::offset(self, count) } @ const_ptr.rs:872
+300: (bf) r4 = r1                     ; frame1: R1=pkt(r=58,imm=42) R4=pkt(r=58,imm=42)
+301: (0f) r4 += r3                    ; frame1: R3=5 R4=pkt(r=58,imm=47)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:128
+302: (bf) r5 = r4                     ; frame1: R4=pkt(r=58,imm=47) R5=pkt(r=58,imm=47)
+303: (07) r5 += 1                     ; frame1: R5=pkt(r=58,imm=48)
+304: (2d) if r5 > r6 goto pc+115      ; frame1: R5=pkt(r=58,imm=48) R6=pkt_end()
+305: (bf) r5 = r10                    ; frame1: R5=fp0 R10=fp0
+306: (07) r5 += -172                  ; frame1: R5=fp-172
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+307: (0f) r5 += r3                    ; frame1: R3=5 R5=fp-167
+; *dst.add(i) = *p_cur; @ parse.rs:132
+308: (71) r4 = *(u8 *)(r4 +0)         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+309: (73) *(u8 *)(r5 +0) = r4         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R5=fp-167 fp-168=mmmmmmmm
+; i += 1; @ parse.rs:135
+310: (07) r3 += 1                     ; frame1: R3=6
+; while i < nn { @ parse.rs:127
+311: (2d) if r2 > r3 goto pc-12       ; frame1: R2=16 R3=6
+; unsafe { intrinsics::offset(self, count) } @ const_ptr.rs:872
+300: (bf) r4 = r1                     ; frame1: R1=pkt(r=58,imm=42) R4=pkt(r=58,imm=42)
+301: (0f) r4 += r3                    ; frame1: R3=6 R4=pkt(r=58,imm=48)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:128
+302: (bf) r5 = r4                     ; frame1: R4=pkt(r=58,imm=48) R5=pkt(r=58,imm=48)
+303: (07) r5 += 1                     ; frame1: R5=pkt(r=58,imm=49)
+304: (2d) if r5 > r6 goto pc+115      ; frame1: R5=pkt(r=58,imm=49) R6=pkt_end()
+305: (bf) r5 = r10                    ; frame1: R5=fp0 R10=fp0
+306: (07) r5 += -172                  ; frame1: R5=fp-172
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+307: (0f) r5 += r3                    ; frame1: R3=6 R5=fp-166
+; *dst.add(i) = *p_cur; @ parse.rs:132
+308: (71) r4 = *(u8 *)(r4 +0)         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+309: (73) *(u8 *)(r5 +0) = r4         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R5=fp-166 fp-168=mmmmmmmm
+; i += 1; @ parse.rs:135
+310: (07) r3 += 1                     ; frame1: R3=7
+; while i < nn { @ parse.rs:127
+311: (2d) if r2 > r3 goto pc-12       ; frame1: R2=16 R3=7
+; unsafe { intrinsics::offset(self, count) } @ const_ptr.rs:872
+300: (bf) r4 = r1                     ; frame1: R1=pkt(r=58,imm=42) R4=pkt(r=58,imm=42)
+301: (0f) r4 += r3                    ; frame1: R3=7 R4=pkt(r=58,imm=49)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:128
+302: (bf) r5 = r4                     ; frame1: R4=pkt(r=58,imm=49) R5=pkt(r=58,imm=49)
+303: (07) r5 += 1                     ; frame1: R5=pkt(r=58,imm=50)
+304: (2d) if r5 > r6 goto pc+115      ; frame1: R5=pkt(r=58,imm=50) R6=pkt_end()
+305: (bf) r5 = r10                    ; frame1: R5=fp0 R10=fp0
+306: (07) r5 += -172                  ; frame1: R5=fp-172
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+307: (0f) r5 += r3                    ; frame1: R3=7 R5=fp-165
+; *dst.add(i) = *p_cur; @ parse.rs:132
+308: (71) r4 = *(u8 *)(r4 +0)         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+309: (73) *(u8 *)(r5 +0) = r4         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R5=fp-165 fp-168=mmmmmmmm
+; i += 1; @ parse.rs:135
+310: (07) r3 += 1                     ; frame1: R3=8
+; while i < nn { @ parse.rs:127
+311: (2d) if r2 > r3 goto pc-12       ; frame1: R2=16 R3=8
+; unsafe { intrinsics::offset(self, count) } @ const_ptr.rs:872
+300: (bf) r4 = r1                     ; frame1: R1=pkt(r=58,imm=42) R4=pkt(r=58,imm=42)
+301: (0f) r4 += r3                    ; frame1: R3=8 R4=pkt(r=58,imm=50)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:128
+302: (bf) r5 = r4                     ; frame1: R4=pkt(r=58,imm=50) R5=pkt(r=58,imm=50)
+303: (07) r5 += 1                     ; frame1: R5=pkt(r=58,imm=51)
+304: (2d) if r5 > r6 goto pc+115      ; frame1: R5=pkt(r=58,imm=51) R6=pkt_end()
+305: (bf) r5 = r10                    ; frame1: R5=fp0 R10=fp0
+306: (07) r5 += -172                  ; frame1: R5=fp-172
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+307: (0f) r5 += r3                    ; frame1: R3=8 R5=fp-164
+; *dst.add(i) = *p_cur; @ parse.rs:132
+308: (71) r4 = *(u8 *)(r4 +0)         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+309: (73) *(u8 *)(r5 +0) = r4         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R5=fp-164 fp-168=mmmmmmmm
+; i += 1; @ parse.rs:135
+310: (07) r3 += 1                     ; frame1: R3=9
+; while i < nn { @ parse.rs:127
+311: (2d) if r2 > r3 goto pc-12       ; frame1: R2=16 R3=9
+; unsafe { intrinsics::offset(self, count) } @ const_ptr.rs:872
+300: (bf) r4 = r1                     ; frame1: R1=pkt(r=58,imm=42) R4=pkt(r=58,imm=42)
+301: (0f) r4 += r3                    ; frame1: R3=9 R4=pkt(r=58,imm=51)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:128
+302: (bf) r5 = r4                     ; frame1: R4=pkt(r=58,imm=51) R5=pkt(r=58,imm=51)
+303: (07) r5 += 1                     ; frame1: R5=pkt(r=58,imm=52)
+304: (2d) if r5 > r6 goto pc+115      ; frame1: R5=pkt(r=58,imm=52) R6=pkt_end()
+305: (bf) r5 = r10                    ; frame1: R5=fp0 R10=fp0
+306: (07) r5 += -172                  ; frame1: R5=fp-172
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+307: (0f) r5 += r3                    ; frame1: R3=9 R5=fp-163
+; *dst.add(i) = *p_cur; @ parse.rs:132
+308: (71) r4 = *(u8 *)(r4 +0)         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+309: (73) *(u8 *)(r5 +0) = r4         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R5=fp-163 fp-168=mmmmmmmm
+; i += 1; @ parse.rs:135
+310: (07) r3 += 1                     ; frame1: R3=10
+; while i < nn { @ parse.rs:127
+311: (2d) if r2 > r3 goto pc-12       ; frame1: R2=16 R3=10
+; unsafe { intrinsics::offset(self, count) } @ const_ptr.rs:872
+300: (bf) r4 = r1                     ; frame1: R1=pkt(r=58,imm=42) R4=pkt(r=58,imm=42)
+301: (0f) r4 += r3                    ; frame1: R3=10 R4=pkt(r=58,imm=52)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:128
+302: (bf) r5 = r4                     ; frame1: R4=pkt(r=58,imm=52) R5=pkt(r=58,imm=52)
+303: (07) r5 += 1                     ; frame1: R5=pkt(r=58,imm=53)
+304: (2d) if r5 > r6 goto pc+115      ; frame1: R5=pkt(r=58,imm=53) R6=pkt_end()
+305: (bf) r5 = r10                    ; frame1: R5=fp0 R10=fp0
+306: (07) r5 += -172                  ; frame1: R5=fp-172
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+307: (0f) r5 += r3                    ; frame1: R3=10 R5=fp-162
+; *dst.add(i) = *p_cur; @ parse.rs:132
+308: (71) r4 = *(u8 *)(r4 +0)         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+309: (73) *(u8 *)(r5 +0) = r4         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R5=fp-162 fp-168=mmmmmmmm
+; i += 1; @ parse.rs:135
+310: (07) r3 += 1                     ; frame1: R3=11
+; while i < nn { @ parse.rs:127
+311: (2d) if r2 > r3 goto pc-12       ; frame1: R2=16 R3=11
+; unsafe { intrinsics::offset(self, count) } @ const_ptr.rs:872
+300: (bf) r4 = r1                     ; frame1: R1=pkt(r=58,imm=42) R4=pkt(r=58,imm=42)
+301: (0f) r4 += r3                    ; frame1: R3=11 R4=pkt(r=58,imm=53)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:128
+302: (bf) r5 = r4                     ; frame1: R4=pkt(r=58,imm=53) R5=pkt(r=58,imm=53)
+303: (07) r5 += 1                     ; frame1: R5=pkt(r=58,imm=54)
+304: (2d) if r5 > r6 goto pc+115      ; frame1: R5=pkt(r=58,imm=54) R6=pkt_end()
+305: (bf) r5 = r10                    ; frame1: R5=fp0 R10=fp0
+306: (07) r5 += -172                  ; frame1: R5=fp-172
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+307: (0f) r5 += r3                    ; frame1: R3=11 R5=fp-161
+; *dst.add(i) = *p_cur; @ parse.rs:132
+308: (71) r4 = *(u8 *)(r4 +0)         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+309: (73) *(u8 *)(r5 +0) = r4         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R5=fp-161 fp-168=mmmmmmmm
+; i += 1; @ parse.rs:135
+310: (07) r3 += 1                     ; frame1: R3=12
+; while i < nn { @ parse.rs:127
+311: (2d) if r2 > r3 goto pc-12       ; frame1: R2=16 R3=12
+; unsafe { intrinsics::offset(self, count) } @ const_ptr.rs:872
+300: (bf) r4 = r1                     ; frame1: R1=pkt(r=58,imm=42) R4=pkt(r=58,imm=42)
+301: (0f) r4 += r3                    ; frame1: R3=12 R4=pkt(r=58,imm=54)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:128
+302: (bf) r5 = r4                     ; frame1: R4=pkt(r=58,imm=54) R5=pkt(r=58,imm=54)
+303: (07) r5 += 1                     ; frame1: R5=pkt(r=58,imm=55)
+304: (2d) if r5 > r6 goto pc+115      ; frame1: R5=pkt(r=58,imm=55) R6=pkt_end()
+305: (bf) r5 = r10                    ; frame1: R5=fp0 R10=fp0
+306: (07) r5 += -172                  ; frame1: R5=fp-172
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+307: (0f) r5 += r3                    ; frame1: R3=12 R5=fp-160
+; *dst.add(i) = *p_cur; @ parse.rs:132
+308: (71) r4 = *(u8 *)(r4 +0)         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+309: (73) *(u8 *)(r5 +0) = r4         ; frame1: R4=scalar(id=12,smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R5=fp-160 fp-160=????000scalar(id=12,smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+; i += 1; @ parse.rs:135
+310: (07) r3 += 1                     ; frame1: R3=13
+; while i < nn { @ parse.rs:127
+311: (2d) if r2 > r3 goto pc-12       ; frame1: R2=16 R3=13
+; unsafe { intrinsics::offset(self, count) } @ const_ptr.rs:872
+300: (bf) r4 = r1                     ; frame1: R1=pkt(r=58,imm=42) R4=pkt(r=58,imm=42)
+301: (0f) r4 += r3                    ; frame1: R3=13 R4=pkt(r=58,imm=55)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:128
+302: (bf) r5 = r4                     ; frame1: R4=pkt(r=58,imm=55) R5=pkt(r=58,imm=55)
+303: (07) r5 += 1                     ; frame1: R5=pkt(r=58,imm=56)
+304: (2d) if r5 > r6 goto pc+115      ; frame1: R5=pkt(r=58,imm=56) R6=pkt_end()
+305: (bf) r5 = r10                    ; frame1: R5=fp0 R10=fp0
+306: (07) r5 += -172                  ; frame1: R5=fp-172
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+307: (0f) r5 += r3                    ; frame1: R3=13 R5=fp-159
+; *dst.add(i) = *p_cur; @ parse.rs:132
+308: (71) r4 = *(u8 *)(r4 +0)         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+309: (73) *(u8 *)(r5 +0) = r4         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R5=fp-159 fp-160=????mmmm
+; i += 1; @ parse.rs:135
+310: (07) r3 += 1                     ; frame1: R3=14
+; while i < nn { @ parse.rs:127
+311: (2d) if r2 > r3 goto pc-12       ; frame1: R2=16 R3=14
+; unsafe { intrinsics::offset(self, count) } @ const_ptr.rs:872
+300: (bf) r4 = r1                     ; frame1: R1=pkt(r=58,imm=42) R4=pkt(r=58,imm=42)
+301: (0f) r4 += r3                    ; frame1: R3=14 R4=pkt(r=58,imm=56)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:128
+302: (bf) r5 = r4                     ; frame1: R4=pkt(r=58,imm=56) R5=pkt(r=58,imm=56)
+303: (07) r5 += 1                     ; frame1: R5=pkt(r=58,imm=57)
+304: (2d) if r5 > r6 goto pc+115      ; frame1: R5=pkt(r=58,imm=57) R6=pkt_end()
+305: (bf) r5 = r10                    ; frame1: R5=fp0 R10=fp0
+306: (07) r5 += -172                  ; frame1: R5=fp-172
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+307: (0f) r5 += r3                    ; frame1: R3=14 R5=fp-158
+; *dst.add(i) = *p_cur; @ parse.rs:132
+308: (71) r4 = *(u8 *)(r4 +0)         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+309: (73) *(u8 *)(r5 +0) = r4         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R5=fp-158 fp-160=????mmmm
+; i += 1; @ parse.rs:135
+310: (07) r3 += 1                     ; frame1: R3=15
+; while i < nn { @ parse.rs:127
+311: (2d) if r2 > r3 goto pc-12       ; frame1: R2=16 R3=15
+; unsafe { intrinsics::offset(self, count) } @ const_ptr.rs:872
+300: (bf) r4 = r1                     ; frame1: R1=pkt(r=58,imm=42) R4=pkt(r=58,imm=42)
+301: (0f) r4 += r3                    ; frame1: R3=15 R4=pkt(r=58,imm=57)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:128
+302: (bf) r5 = r4                     ; frame1: R4=pkt(r=58,imm=57) R5=pkt(r=58,imm=57)
+303: (07) r5 += 1                     ; frame1: R5=pkt(r=58,imm=58)
+304: (2d) if r5 > r6 goto pc+115      ; frame1: R5=pkt(r=58,imm=58) R6=pkt_end()
+305: (bf) r5 = r10                    ; frame1: R5=fp0 R10=fp0
+306: (07) r5 += -172                  ; frame1: R5=fp-172
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+307: (0f) r5 += r3                    ; frame1: R3=15 R5=fp-157
+; *dst.add(i) = *p_cur; @ parse.rs:132
+308: (71) r4 = *(u8 *)(r4 +0)         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+309: (73) *(u8 *)(r5 +0) = r4         ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R5=fp-157 fp-160=????mmmm
+; i += 1; @ parse.rs:135
+310: (07) r3 += 1                     ; frame1: R3=16
+; while i < nn { @ parse.rs:127
+311: (2d) if r2 > r3 goto pc-12       ; frame1: R2=16 R3=16
+312: (7b) *(u64 *)(r10 -288) = r9     ; frame1: R9=26 R10=fp0 fp-288=26
+313: (b7) r1 = 0                      ; frame1: R1=0
+; unsafe { self.lookup(index).map(|p| p.as_ref()) } @ array.rs:25
+314: (63) *(u32 *)(r10 -120) = r1     ; frame1: R1=0 R10=fp0 fp-120=????0
+315: (bf) r2 = r10                    ; frame1: R2=fp0 R10=fp0
+316: (07) r2 += -120                  ; frame1: R2=fp-120
+; fun(map, key) @ helpers.rs:10
+317: (18) r1 = 0xffff890485f60c00     ; frame1: R1=map_ptr(map=CONFIG,ks=4,vs=120)
+319: (85) call bpf_map_lookup_elem#1          ; frame1: R0=map_value(map=CONFIG,ks=4,vs=120)
+320: (bf) r1 = r0                     ; frame1: R0=map_value(map=CONFIG,ks=4,vs=120) R1=map_value(map=CONFIG,ks=4,vs=120)
+321: (b7) r0 = 2                      ; frame1: R0=2
+322: (7b) *(u64 *)(r10 -280) = r1     ; frame1: R1=map_value(map=CONFIG,ks=4,vs=120) R10=fp0 fp-280=map_value(map=CONFIG,ks=4,vs=120)
+; let cfg: &ConfigValue = match CONFIG.get(0) { @ main.rs:459
+323: (15) if r1 == 0x0 goto pc+1032   ; frame1: R1=map_value(map=CONFIG,ks=4,vs=120)
+324: (bf) r2 = r10                    ; frame1: R2=fp0 R10=fp0
+325: (07) r2 += -165                  ; frame1: R2=fp-165
+326: (bf) r3 = r10                    ; frame1: R3=fp0 R10=fp0
+327: (07) r3 += -163                  ; frame1: R3=fp-163
+328: (bf) r4 = r10                    ; frame1: R4=fp0 R10=fp0
+329: (07) r4 += -162                  ; frame1: R4=fp-162
+; let dst4 = match extract_v4(cfg.prefix.as_ptr(), cfg.prefix_len, dst6.as_ptr()) { @ main.rs:463
+330: (79) r1 = *(u64 *)(r10 -280)     ; frame1: R1=map_value(map=CONFIG,ks=4,vs=120) R10=fp0 fp-280=map_value(map=CONFIG,ks=4,vs=120)
+331: (71) r9 = *(u8 *)(r1 +16)        ; frame1: R1=map_value(map=CONFIG,ks=4,vs=120) R9=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+; match plen { @ parse.rs:377
+332: (bf) r1 = r9                     ; frame1: R1=scalar(id=13,smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R9=scalar(id=13,smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+333: (77) r1 >>= 3                    ; frame1: R1=scalar(smin=smin32=0,smax=umax=smax32=umax32=31,var_off=(0x0; 0x1f))
+334: (67) r9 <<= 5                    ; frame1: R9=scalar(smin=smin32=0,smax=umax=smax32=umax32=8160,var_off=(0x0; 0x1fe0))
+335: (4f) r9 |= r1                    ; frame1: R1=scalar(smin=smin32=0,smax=umax=smax32=umax32=31,var_off=(0x0; 0x1f)) R9=scalar(smin=smin32=0,smax=umax=smax32=umax32=8191,var_off=(0x0; 0x1fff))
+336: (57) r9 &= 255                   ; frame1: R9=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+337: (65) if r9 s> 0x6 goto pc+371    ; frame1: R9=scalar(smin=smin32=0,smax=umax=smax32=umax32=6,var_off=(0x0; 0x7))
+338: (bf) r5 = r10                    ; frame1: R5=fp0 R10=fp0
+339: (07) r5 += -167                  ; frame1: R5=fp-167
+340: (bf) r1 = r10                    ; frame1: R1=fp0 R10=fp0
+341: (07) r1 += -166                  ; frame1: R1=fp-166
+342: (7b) *(u64 *)(r10 -296) = r1     ; frame1: R10=fp0 fp-296=fp-166
+343: (15) if r9 == 0x4 goto pc+436    ; frame1: R9=scalar(smin=smin32=0,smax=umax=smax32=umax32=6,var_off=(0x0; 0x7))
+344: (15) if r9 == 0x5 goto pc+507    ; frame1: R9=scalar(smin=smin32=0,smax=umax=smax32=umax32=6,var_off=(0x0; 0x7))
+345: (b7) r1 = 2                      ; frame1: R1=2
+346: (15) if r9 == 0x6 goto pc+1 348: frame1: R2=fp-165 R3=fp-163 R4=fp-162 R6=pkt_end() R7=pkt(r=58) R8=scalar(umin=14) R10=fp0 fp-120=????0 fp-160=????mmmm fp-168=mmmmmmmm fp-176=mmmmmmmm fp-184=mmmmmmmm fp-192=mmmm???? fp-200=58 fp-208=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-216=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-224=18 fp-232=ctx() fp-240=24 fp-248=22 fp-256=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-264=scalar(smin=umin=smin32=umin32=2,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-272=42 fp-280=map_value(map=CONFIG,ks=4,vs=120) fp-288=26 fp-296=fp-166
+; unsafe { *base.add(i) } @ parse.rs:109
+348: (79) r1 = *(u64 *)(r10 -280)     ; frame1: R1=map_value(map=CONFIG,ks=4,vs=120) R10=fp0 fp-280=map_value(map=CONFIG,ks=4,vs=120)
+349: (71) r5 = *(u8 *)(r1 +0)         ; frame1: R1=map_value(map=CONFIG,ks=4,vs=120) R5=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+350: (71) r0 = *(u8 *)(r10 -172)      ; frame1: R0=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R10=fp0 fp-176=mmmmmmmm
+351: (b7) r1 = 2                      ; frame1: R1=2
+; if pk8(prefix, i) != pk8(dst, i) { @ parse.rs:417
+352: (1d) if r5 == r0 goto pc+1 354: frame1: R2=fp-165 R3=fp-163 R4=fp-162 R6=pkt_end() R7=pkt(r=58) R8=scalar(umin=14) R10=fp0 fp-120=????0 fp-160=????mmmm fp-168=mmmmmmmm fp-176=mmmmmmmm fp-184=mmmmmmmm fp-192=mmmm???? fp-200=58 fp-208=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-216=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-224=18 fp-232=ctx() fp-240=24 fp-248=22 fp-256=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-264=scalar(smin=umin=smin32=umin32=2,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-272=42 fp-280=map_value(map=CONFIG,ks=4,vs=120) fp-288=26 fp-296=fp-166
+; unsafe { *base.add(i) } @ parse.rs:109
+354: (79) r1 = *(u64 *)(r10 -280)     ; frame1: R1=map_value(map=CONFIG,ks=4,vs=120) R10=fp0 fp-280=map_value(map=CONFIG,ks=4,vs=120)
+355: (71) r5 = *(u8 *)(r1 +1)         ; frame1: R1=map_value(map=CONFIG,ks=4,vs=120) R5=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+356: (71) r0 = *(u8 *)(r10 -171)      ; frame1: R0=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R10=fp0 fp-176=mmmmmmmm
+357: (b7) r1 = 2                      ; frame1: R1=2
+; if pk8(prefix, i) != pk8(dst, i) { @ parse.rs:417
+358: (5d) if r5 != r0 goto pc+721     ; frame1: R0=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R5=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+; unsafe { *base.add(i) } @ parse.rs:109
+359: (79) r1 = *(u64 *)(r10 -280)     ; frame1: R1=map_value(map=CONFIG,ks=4,vs=120) R10=fp0 fp-280=map_value(map=CONFIG,ks=4,vs=120)
+360: (71) r5 = *(u8 *)(r1 +2)         ; frame1: R1=map_value(map=CONFIG,ks=4,vs=120) R5=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+361: (71) r0 = *(u8 *)(r10 -170)      ; frame1: R0=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R10=fp0 fp-176=mmmmmmmm
+362: (b7) r1 = 2                      ; frame1: R1=2
+; if pk8(prefix, i) != pk8(dst, i) { @ parse.rs:417
+363: (5d) if r5 != r0 goto pc+716     ; frame1: R0=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R5=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+; unsafe { *base.add(i) } @ parse.rs:109
+364: (79) r1 = *(u64 *)(r10 -280)     ; frame1: R1=map_value(map=CONFIG,ks=4,vs=120) R10=fp0 fp-280=map_value(map=CONFIG,ks=4,vs=120)
+365: (71) r5 = *(u8 *)(r1 +3)         ; frame1: R1=map_value(map=CONFIG,ks=4,vs=120) R5=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+366: (71) r0 = *(u8 *)(r10 -169)      ; frame1: R0=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R10=fp0 fp-176=mmmmmmmm
+367: (b7) r1 = 2                      ; frame1: R1=2
+; if pk8(prefix, i) != pk8(dst, i) { @ parse.rs:417
+368: (5d) if r5 != r0 goto pc+711     ; frame1: R0=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R5=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+; unsafe { *base.add(i) } @ parse.rs:109
+369: (79) r1 = *(u64 *)(r10 -280)     ; frame1: R1=map_value(map=CONFIG,ks=4,vs=120) R10=fp0 fp-280=map_value(map=CONFIG,ks=4,vs=120)
+370: (71) r5 = *(u8 *)(r1 +4)         ; frame1: R1=map_value(map=CONFIG,ks=4,vs=120) R5=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+371: (71) r0 = *(u8 *)(r10 -168)      ; frame1: R0=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R10=fp0 fp-168=mmmmmmmm
+372: (b7) r1 = 2                      ; frame1: R1=2
+; if pk8(prefix, i) != pk8(dst, i) { @ parse.rs:417
+373: (5d) if r5 != r0 goto pc+706     ; frame1: R0=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R5=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+; unsafe { *base.add(i) } @ parse.rs:109
+374: (79) r1 = *(u64 *)(r10 -280)     ; frame1: R1=map_value(map=CONFIG,ks=4,vs=120) R10=fp0 fp-280=map_value(map=CONFIG,ks=4,vs=120)
+375: (71) r5 = *(u8 *)(r1 +5)         ; frame1: R1=map_value(map=CONFIG,ks=4,vs=120) R5=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+376: (71) r0 = *(u8 *)(r10 -167)      ; frame1: R0=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R10=fp0 fp-168=mmmmmmmm
+377: (b7) r1 = 2                      ; frame1: R1=2
+; if pk8(prefix, i) != pk8(dst, i) { @ parse.rs:417
+378: (5d) if r5 != r0 goto pc+701     ; frame1: R0=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R5=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+379: (71) r0 = *(u8 *)(r10 -164)      ; frame1: R0=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R10=fp0 fp-168=mmmmmmmm
+380: (79) r9 = *(u64 *)(r10 -296)     ; frame1: R9=fp-166 R10=fp0 fp-296=fp-166
+381: (bf) r5 = r2                     ; frame1: R2=fp-165 R5=fp-165
+382: (7b) *(u64 *)(r10 -296) = r3     ; frame1: R3=fp-163 R10=fp0 fp-296=fp-163
+383: (bf) r2 = r4                     ; frame1: R2=fp-162
+384: (15) if r0 == 0x0 goto pc+500 885: frame1: R2=fp-162 R5=fp-165 R6=pkt_end() R7=pkt(r=58) R8=scalar(umin=14) R9=fp-166 R10=fp0 fp-120=????0 fp-160=????mmmm fp-168=mmmmmmmm fp-176=mmmmmmmm fp-184=mmmmmmmm fp-192=mmmm???? fp-200=58 fp-208=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-216=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-224=18 fp-232=ctx() fp-240=24 fp-248=22 fp-256=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-264=scalar(smin=umin=smin32=umin32=2,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-272=42 fp-280=map_value(map=CONFIG,ks=4,vs=120) fp-288=26 fp-296=fp-163
+; unsafe { *base.add(i) } @ parse.rs:109
+885: (71) r1 = *(u8 *)(r9 +0)         ; frame1: R1=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R9=fp-166 fp-168=mmmmmmmm
+886: (71) r9 = *(u8 *)(r5 +0)         ; frame1: R5=fp-165 R9=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-168=mmmmmmmm
+887: (67) r9 <<= 8                    ; frame1: R9=scalar(smin=smin32=0,smax=umax=smax32=umax32=0xff00,var_off=(0x0; 0xff00))
+888: (4f) r9 |= r1                    ; frame1: R1=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R9=scalar(smin=smin32=0,smax=umax=smax32=umax32=0xffff,var_off=(0x0; 0xffff))
+889: (79) r1 = *(u64 *)(r10 -296)     ; frame1: R1=fp-163 R10=fp0 fp-296=fp-163
+890: (71) r1 = *(u8 *)(r1 +0)         ; frame1: R1=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-168=mmmmmmmm
+891: (67) r1 <<= 16                   ; frame1: R1=scalar(smin=smin32=0,smax=umax=smax32=umax32=0xff0000,var_off=(0x0; 0xff0000))
+892: (4f) r9 |= r1                    ; frame1: R1=scalar(smin=smin32=0,smax=umax=smax32=umax32=0xff0000,var_off=(0x0; 0xff0000)) R9=scalar(smin=smin32=0,smax=umax=smax32=umax32=0xffffff,var_off=(0x0; 0xffffff))
+893: (71) r1 = *(u8 *)(r2 +0)         ; frame1: R1=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R2=fp-162 fp-168=mmmmmmmm
+894: (67) r1 <<= 24                   ; frame1: R1=scalar(smin=0,smax=umax=umax32=0xff000000,var_off=(0x0; 0xff000000))
+895: (4f) r9 |= r1                    ; frame1: R1=scalar(smin=0,smax=umax=umax32=0xff000000,var_off=(0x0; 0xff000000)) R9=scalar(smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff))
+896: (79) r1 = *(u64 *)(r10 -280)     ; frame1: R1=map_value(map=CONFIG,ks=4,vs=120) R10=fp0 fp-280=map_value(map=CONFIG,ks=4,vs=120)
+; let pool = &cfg.pool as *const [u32; MAX_POOL_ADDRS] as *const u32; @ main.rs:144
+897: (bf) r2 = r1                     ; frame1: R1=map_value(map=CONFIG,ks=4,vs=120) R2=map_value(map=CONFIG,ks=4,vs=120)
+898: (07) r2 += 20                    ; frame1: R2=map_value(map=CONFIG,ks=4,vs=120,imm=20)
+899: (7b) *(u64 *)(r10 -296) = r2     ; frame1: R2=map_value(map=CONFIG,ks=4,vs=120,imm=20) R10=fp0 fp-296=map_value(map=CONFIG,ks=4,vs=120,imm=20)
+; Ok(v) => v, @ main.rs:464
+900: (63) *(u32 *)(r10 -156) = r9     ; frame1: R9=scalar(smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff)) R10=fp0 fp-160=mmmmmmmm
+; intrinsics::bswap(self as $ActualT) as Self @ uint_macros.rs:767
+901: (dc) r9 = be32 r9                ; frame1: R9=scalar(smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff))
+902: (71) r1 = *(u8 *)(r1 +17)        ; frame1: R1=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+; if (i as u8) < cfg.pool_count && unsafe { *pool.add(i as usize) } == v4 { @ main.rs:147
+903: (15) if r1 == 0x0 goto pc+34     ; frame1: R1=scalar(smin=umin=smin32=umin32=1,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+904: (79) r2 = *(u64 *)(r10 -296)     ; frame1: R2=map_value(map=CONFIG,ks=4,vs=120,imm=20) R10=fp0 fp-296=map_value(map=CONFIG,ks=4,vs=120,imm=20)
+905: (61) r2 = *(u32 *)(r2 +0)        ; frame1: R2=scalar(smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff))
+906: (1d) if r2 == r9 goto pc+142     ; frame1: R2=scalar(smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff)) R9=scalar(smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff))
+907: (15) if r1 == 0x1 goto pc+30     ; frame1: R1=scalar(smin=umin=smin32=umin32=2,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+908: (79) r2 = *(u64 *)(r10 -280)     ; frame1: R2=map_value(map=CONFIG,ks=4,vs=120) R10=fp0 fp-280=map_value(map=CONFIG,ks=4,vs=120)
+909: (61) r2 = *(u32 *)(r2 +24)       ; frame1: R2=scalar(smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff))
+910: (1d) if r2 == r9 goto pc+138     ; frame1: R2=scalar(smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff)) R9=scalar(smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff))
+911: (b7) r2 = 3                      ; frame1: R2=3
+912: (2d) if r2 > r1 goto pc+25       ; frame1: R1=scalar(smin=umin=smin32=umin32=3,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R2=3
+913: (79) r2 = *(u64 *)(r10 -280)     ; frame1: R2=map_value(map=CONFIG,ks=4,vs=120) R10=fp0 fp-280=map_value(map=CONFIG,ks=4,vs=120)
+914: (61) r2 = *(u32 *)(r2 +28)       ; frame1: R2=scalar(smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff))
+915: (1d) if r2 == r9 goto pc+133     ; frame1: R2=scalar(smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff)) R9=scalar(smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff))
+916: (15) if r1 == 0x3 goto pc+21     ; frame1: R1=scalar(smin=umin=smin32=umin32=4,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+917: (79) r2 = *(u64 *)(r10 -280)     ; frame1: R2=map_value(map=CONFIG,ks=4,vs=120) R10=fp0 fp-280=map_value(map=CONFIG,ks=4,vs=120)
+918: (61) r2 = *(u32 *)(r2 +32)       ; frame1: R2=scalar(smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff))
+919: (1d) if r2 == r9 goto pc+129     ; frame1: R2=scalar(smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff)) R9=scalar(smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff))
+920: (b7) r2 = 5                      ; frame1: R2=5
+921: (2d) if r2 > r1 goto pc+16       ; frame1: R1=scalar(smin=umin=smin32=umin32=5,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R2=5
+922: (79) r2 = *(u64 *)(r10 -280)     ; frame1: R2=map_value(map=CONFIG,ks=4,vs=120) R10=fp0 fp-280=map_value(map=CONFIG,ks=4,vs=120)
+923: (61) r2 = *(u32 *)(r2 +36)       ; frame1: R2=scalar(smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff))
+924: (1d) if r2 == r9 goto pc+124     ; frame1: R2=scalar(smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff)) R9=scalar(smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff))
+925: (15) if r1 == 0x5 goto pc+12     ; frame1: R1=scalar(smin=umin=smin32=umin32=6,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+926: (79) r2 = *(u64 *)(r10 -280)     ; frame1: R2=map_value(map=CONFIG,ks=4,vs=120) R10=fp0 fp-280=map_value(map=CONFIG,ks=4,vs=120)
+927: (61) r2 = *(u32 *)(r2 +40)       ; frame1: R2=scalar(smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff))
+928: (1d) if r2 == r9 goto pc+120     ; frame1: R2=scalar(smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff)) R9=scalar(smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff))
+929: (b7) r2 = 7                      ; frame1: R2=7
+930: (2d) if r2 > r1 goto pc+7        ; frame1: R1=scalar(smin=umin=smin32=umin32=7,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R2=7
+931: (79) r2 = *(u64 *)(r10 -280)     ; frame1: R2=map_value(map=CONFIG,ks=4,vs=120) R10=fp0 fp-280=map_value(map=CONFIG,ks=4,vs=120)
+932: (61) r2 = *(u32 *)(r2 +44)       ; frame1: R2=scalar(smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff))
+933: (1d) if r2 == r9 goto pc+115     ; frame1: R2=scalar(smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff)) R9=scalar(smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff))
+934: (15) if r1 == 0x7 goto pc+3      ; frame1: R1=scalar(smin=umin=smin32=umin32=8,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+935: (79) r1 = *(u64 *)(r10 -280)     ; frame1: R1=map_value(map=CONFIG,ks=4,vs=120) R10=fp0 fp-280=map_value(map=CONFIG,ks=4,vs=120)
+936: (61) r1 = *(u32 *)(r1 +48)       ; frame1: R1=scalar(smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff))
+937: (1d) if r1 == r9 goto pc+111     ; frame1: R1=scalar(smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff)) R9=scalar(smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff))
+; match next { @ main.rs:213
+938: (79) r1 = *(u64 *)(r10 -216)     ; frame1: R1=scalar(id=14,smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R10=fp0 fp-216=scalar(id=14,smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+939: (65) if r1 s> 0x31 goto pc+122   ; frame1: R1=scalar(id=14,smin=smin32=0,smax=umax=smax32=umax32=49,var_off=(0x0; 0x3f)) fp-216=scalar(id=14,smin=smin32=0,smax=umax=smax32=umax32=49,var_off=(0x0; 0x3f))
+940: (79) r1 = *(u64 *)(r10 -216)     ; frame1: R1=scalar(id=14,smin=smin32=0,smax=umax=smax32=umax32=49,var_off=(0x0; 0x3f)) R10=fp0 fp-216=scalar(id=14,smin=smin32=0,smax=umax=smax32=umax32=49,var_off=(0x0; 0x3f))
+941: (65) if r1 s> 0x10 goto pc+140   ; frame1: R1=scalar(id=14,smin=smin32=0,smax=umax=smax32=umax32=16,var_off=(0x0; 0x1f)) fp-216=scalar(id=14,smin=smin32=0,smax=umax=smax32=umax32=16,var_off=(0x0; 0x1f))
+942: (79) r1 = *(u64 *)(r10 -216)     ; frame1: R1=scalar(id=14,smin=smin32=0,smax=umax=smax32=umax32=16,var_off=(0x0; 0x1f)) R10=fp0 fp-216=scalar(id=14,smin=smin32=0,smax=umax=smax32=umax32=16,var_off=(0x0; 0x1f))
+943: (15) if r1 == 0x0 goto pc+128    ; frame1: R1=scalar(id=14,smin=umin=smin32=umin32=1,smax=umax=smax32=umax32=16,var_off=(0x0; 0x1f)) fp-216=scalar(id=14,smin=umin=smin32=umin32=1,smax=umax=smax32=umax32=16,var_off=(0x0; 0x1f))
+944: (79) r1 = *(u64 *)(r10 -216)     ; frame1: R1=scalar(id=14,smin=umin=smin32=umin32=1,smax=umax=smax32=umax32=16,var_off=(0x0; 0x1f)) R10=fp0
+945: (15) if r1 == 0x6 goto pc+1 947: frame1: R6=pkt_end() R7=pkt(r=58) R8=scalar(umin=14) R9=scalar(smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff)) R10=fp0 fp-120=????0 fp-160=mmmmmmmm fp-168=mmmmmmmm fp-176=mmmmmmmm fp-184=mmmmmmmm fp-192=mmmm???? fp-200=58 fp-208=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-224=18 fp-232=ctx() fp-240=24 fp-248=22 fp-256=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-264=scalar(smin=umin=smin32=umin32=2,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-272=42 fp-280=map_value(map=CONFIG,ks=4,vs=120) fp-288=26 fp-296=map_value(map=CONFIG,ks=4,vs=120,imm=20)
+; if data + zext(l4 + TCP_MIN_LEN as u32) > data_end { @ main.rs:479
+947: (79) r1 = *(u64 *)(r10 -200)     ; frame1: R1=58 R10=fp0 fp-200=58
+948: (07) r1 += 20                    ; frame1: R1=78
+949: (63) *(u32 *)(r10 -120) = r1     ; frame1: R1=78 R10=fp0 fp-120=????78
+; intrinsics::volatile_load(src) @ mod.rs:2163
+950: (61) r1 = *(u32 *)(r10 -120)     ; frame1: R1=78 R10=fp0 fp-120=????78
+; if data + zext(l4 + TCP_MIN_LEN as u32) > data_end { @ main.rs:479
+951: (0f) r1 += r7                    ; frame1: R1=pkt(r=58,imm=78) R7=pkt(r=58)
+952: (2d) if r1 > r6 goto pc+1        ; frame1: R1=pkt(r=78,imm=78) R6=pkt_end()
+953: (05) goto pc+403
+; let o = zext(off); @ parse.rs:95
+1357: (79) r1 = *(u64 *)(r10 -200)    ; frame1: R1=58 R10=fp0 fp-200=58
+1358: (63) *(u32 *)(r10 -120) = r1    ; frame1: R1=58 R10=fp0 fp-120=????58
+; intrinsics::volatile_load(src) @ mod.rs:2163
+1359: (61) r2 = *(u32 *)(r10 -120)    ; frame1: R2=58 R10=fp0 fp-120=????58
+; let p = (data + o) as *const u8; @ parse.rs:96
+1360: (0f) r2 += r7                   ; frame1: R2=pkt(r=78,imm=58) R7=pkt(r=78)
+1361: (b7) r1 = 1                     ; frame1: R1=1
+; unsafe { intrinsics::offset(self, count) } @ const_ptr.rs:872
+1362: (bf) r3 = r2                    ; frame1: R2=pkt(r=78,imm=58) R3=pkt(r=78,imm=58)
+1363: (07) r3 += 2                    ; frame1: R3=pkt(r=78,imm=60)
+1364: (b7) r4 = 1                     ; frame1: R4=1
+; if unsafe { p.add(2) } > end { @ parse.rs:98
+1365: (7b) *(u64 *)(r10 -216) = r4    ; frame1: R10=fp0 fp-216=1
+1366: (2d) if r3 > r6 goto pc+9       ; frame1: R3=pkt(r=78,imm=60) R6=pkt_end()
+; Ok(unsafe { u16::from_be_bytes([*p, *p.add(1)]) }) @ parse.rs:101
+1367: (71) r3 = *(u8 *)(r2 +0)        ; frame1: R2=pkt(r=78,imm=58) R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+; unsafe { mem::transmute(bytes) } @ uint_macros.rs:4177
+1368: (71) r4 = *(u8 *)(r2 +1)        ; frame1: R2=pkt(r=78,imm=58) R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+1369: (67) r4 <<= 8                   ; frame1: R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=0xff00,var_off=(0x0; 0xff00))
+1370: (4f) r4 |= r3                   ; frame1: R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R4=scalar(smin=smin32=0,smax=umax=smax32=umax32=0xffff,var_off=(0x0; 0xffff))
+; } @ parse.rs:102
+1371: (dc) r4 = be32 r4               ; frame1: R4=scalar(smin=0,smax=umax=umax32=0xffff0000,var_off=(0x0; 0xffff0000))
+1372: (18) r2 = 0xffff0000            ; frame1: R2=0xffff0000
+1374: (5f) r4 &= r2                   ; frame1: R2=0xffff0000 R4=scalar(smin=0,smax=umax=umax32=0xffff0000,var_off=(0x0; 0xffff0000))
+1375: (7b) *(u64 *)(r10 -216) = r4    ; frame1: R10=fp0 fp-216=scalar(id=15,smin=0,smax=umax=umax32=0xffff0000,var_off=(0x0; 0xffff0000))
+; let d = rb16(data, data_end, l4 + 2); @ main.rs:484
+1376: (79) r2 = *(u64 *)(r10 -200)    ; frame1: R2=58 R10=fp0 fp-200=58
+1377: (07) r2 += 2                    ; frame1: R2=60
+; let o = zext(off); @ parse.rs:95
+1378: (63) *(u32 *)(r10 -120) = r2    ; frame1: R2=60 R10=fp0 fp-120=????60
+; intrinsics::volatile_load(src) @ mod.rs:2163
+1379: (61) r2 = *(u32 *)(r10 -120)    ; frame1: R2=60 R10=fp0 fp-120=????60
+; let p = (data + o) as *const u8; @ parse.rs:96
+1380: (0f) r2 += r7                   ; frame1: R2=pkt(r=78,imm=60) R7=pkt(r=78)
+; unsafe { intrinsics::offset(self, count) } @ const_ptr.rs:872
+1381: (bf) r3 = r2                    ; frame1: R2=pkt(r=78,imm=60) R3=pkt(r=78,imm=60)
+1382: (07) r3 += 2                    ; frame1: R3=pkt(r=78,imm=62)
+; if unsafe { p.add(2) } > end { @ parse.rs:98
+1383: (2d) if r3 > r6 goto pc+8       ; frame1: R3=pkt(r=78,imm=62) R6=pkt_end()
+; Ok(unsafe { u16::from_be_bytes([*p, *p.add(1)]) }) @ parse.rs:101
+1384: (71) r3 = *(u8 *)(r2 +0)        ; frame1: R2=pkt(r=78,imm=60) R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+; unsafe { mem::transmute(bytes) } @ uint_macros.rs:4177
+1385: (71) r1 = *(u8 *)(r2 +1)        ; frame1: R1=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R2=pkt(r=78,imm=60)
+1386: (67) r1 <<= 8                   ; frame1: R1=scalar(smin=smin32=0,smax=umax=smax32=umax32=0xff00,var_off=(0x0; 0xff00))
+1387: (4f) r1 |= r3                   ; frame1: R1=scalar(smin=smin32=0,smax=umax=smax32=umax32=0xffff,var_off=(0x0; 0xffff)) R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+; } @ parse.rs:102
+1388: (dc) r1 = be32 r1               ; frame1: R1=scalar(smin=0,smax=umax=umax32=0xffff0000,var_off=(0x0; 0xffff0000))
+1389: (18) r2 = 0xffff0000            ; frame1: R2=0xffff0000
+1391: (5f) r1 &= r2                   ; frame1: R1=scalar(smin=0,smax=umax=umax32=0xffff0000,var_off=(0x0; 0xffff0000))
+; let f = rb(data, data_end, l4 + 13); @ main.rs:485
+1392: (79) r2 = *(u64 *)(r10 -200)    ; frame1: R2=58 R10=fp0 fp-200=58
+1393: (07) r2 += 13                   ; frame1: R2=71
+; let o = zext(off); @ parse.rs:83
+1394: (63) *(u32 *)(r10 -120) = r2    ; frame1: R2=71 R10=fp0 fp-120=????71
+; intrinsics::volatile_load(src) @ mod.rs:2163
+1395: (61) r2 = *(u32 *)(r10 -120)    ; frame1: R2=71 R10=fp0 fp-120=????71
+; let p = (data + o) as *const u8; @ parse.rs:84
+1396: (0f) r2 += r7                   ; frame1: R2=pkt(r=78,imm=71) R7=pkt(r=78)
+; unsafe { intrinsics::offset(self, count) } @ const_ptr.rs:872
+1397: (bf) r3 = r2                    ; frame1: R2=pkt(r=78,imm=71) R3=pkt(r=78,imm=71)
+1398: (07) r3 += 1                    ; frame1: R3=pkt(r=78,imm=72)
+; if unsafe { p.add(1) } > end { @ parse.rs:86
+1399: (2d) if r3 > r6 goto pc+19      ; frame1: R3=pkt(r=78,imm=72) R6=pkt_end()
+; match (s, d, f) { @ main.rs:486
+1400: (79) r3 = *(u64 *)(r10 -216)    ; frame1: R3=scalar(id=16,smin=0,smax=umax=umax32=0xffff0000,var_off=(0x0; 0xffff0000)) R10=fp0 fp-216=scalar(id=16,smin=0,smax=umax=umax32=0xffff0000,var_off=(0x0; 0xffff0000))
+1401: (57) r3 &= 1                    ; frame1: R3=0
+1402: (55) if r3 != 0x0 goto pc+16    ; frame1: R3=0
+1403: (79) r3 = *(u64 *)(r10 -216)    ; frame1: R3=scalar(id=16,smin=0,smax=umax=umax32=0xffff0000,var_off=(0x0; 0xffff0000)) R10=fp0 fp-216=scalar(id=16,smin=0,smax=umax=umax32=0xffff0000,var_off=(0x0; 0xffff0000))
+1404: (77) r3 >>= 16                  ; frame1: R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=0xffff,var_off=(0x0; 0xffff))
+1405: (7b) *(u64 *)(r10 -216) = r3    ; frame1: R3=scalar(id=17,smin=smin32=0,smax=umax=smax32=umax32=0xffff,var_off=(0x0; 0xffff)) R10=fp0 fp-216=scalar(id=17,smin=smin32=0,smax=umax=smax32=umax32=0xffff,var_off=(0x0; 0xffff))
+1406: (b7) r3 = 1                     ; frame1: R3=1
+1407: (7b) *(u64 *)(r10 -328) = r3    ; frame1: R3=1 R10=fp0 fp-328=1
+1408: (b7) r3 = 6                     ; frame1: R3=6
+1409: (7b) *(u64 *)(r10 -304) = r3    ; frame1: R3=6 R10=fp0 fp-304=6
+1410: (b7) r3 = 0                     ; frame1: R3=0
+1411: (7b) *(u64 *)(r10 -336) = r3    ; frame1: R3=0 R10=fp0 fp-336=0
+1412: (71) r2 = *(u8 *)(r2 +0)        ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+1413: (7b) *(u64 *)(r10 -320) = r2    ; frame1: R2=scalar(id=18,smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R10=fp0 fp-320=scalar(id=18,smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+1414: (bf) r2 = r1                    ; frame1: R1=scalar(id=19,smin=0,smax=umax=umax32=0xffff0000,var_off=(0x0; 0xffff0000)) R2=scalar(id=19,smin=0,smax=umax=umax32=0xffff0000,var_off=(0x0; 0xffff0000))
+1415: (77) r2 >>= 16                  ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=0xffff,var_off=(0x0; 0xffff))
+1416: (7b) *(u64 *)(r10 -312) = r2    ; frame1: R2=scalar(id=20,smin=smin32=0,smax=umax=smax32=umax32=0xffff,var_off=(0x0; 0xffff)) R10=fp0 fp-312=scalar(id=20,smin=smin32=0,smax=umax=smax32=umax32=0xffff,var_off=(0x0; 0xffff))
+1417: (57) r1 &= 1                    ; frame1: R1=0
+1418: (15) if r1 == 0x0 goto pc+1765          ; frame1: R1=0
+; let pkt_len = data_end.saturating_sub(data) as u32; @ main.rs:1033
+3184: (bf) r1 = r8                    ; frame1: R1=scalar(id=21,umin=14) R8=scalar(id=21,umin=14)
+3185: (67) r1 <<= 32                  ; frame1: R1=scalar(smax=0x7fffffff00000000,smin32=0,smax32=umax32=0,var_off=(0x0; 0xffffffff00000000))
+3186: (77) r1 >>= 32                  ; frame1: R1=scalar(smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff))
+; if pkt_len < l4 { @ main.rs:537
+3187: (79) r2 = *(u64 *)(r10 -200)    ; frame1: R2=58 R10=fp0 fp-200=58
+3188: (2d) if r2 > r1 goto pc+92      ; frame1: R1=scalar(smin=umin=umin32=58,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff)) R2=58
+; let seg_len = pkt_len - l4; @ main.rs:541
+3189: (bf) r2 = r8                    ; frame1: R2=scalar(id=21,umin=14) R8=scalar(id=21,umin=14)
+3190: (79) r1 = *(u64 *)(r10 -200)    ; frame1: R1=58 R10=fp0 fp-200=58
+3191: (1f) r2 -= r1                   ; frame1: R1=58 R2=scalar(id=21-58)
+3192: (7b) *(u64 *)(r10 -344) = r2    ; frame1: R2=scalar(id=22) R10=fp0 fp-344=scalar(id=22)
+3193: (bf) r1 = r2                    ; frame1: R1=scalar(id=22) R2=scalar(id=22)
+3194: (67) r1 <<= 32                  ; frame1: R1=scalar(smax=0x7fffffff00000000,smin32=0,smax32=umax32=0,var_off=(0x0; 0xffffffff00000000))
+3195: (77) r1 >>= 32                  ; frame1: R1=scalar(smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff))
+3196: (b7) r2 = 4                     ; frame1: R2=4
+; if seg_len > MAX_COPY || seg_len < 4 { @ main.rs:542
+3197: (2d) if r2 > r1 goto pc+93      ; frame1: R1=scalar(smin=umin=umin32=4,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff)) R2=4
+3198: (25) if r1 > 0x800 goto pc+92   ; frame1: R1=scalar(smin=umin=smin32=umin32=4,smax=umax=smax32=umax32=2048,var_off=(0x0; 0xfff))
+; fun() @ helpers.rs:50
+3199: (85) call bpf_ktime_get_ns#5    ; frame1: R0=scalar()
+3200: (7b) *(u64 *)(r10 -352) = r0    ; frame1: R0=scalar(id=23) R10=fp0 fp-352=scalar(id=23)
+3201: (bf) r1 = r10                   ; frame1: R1=fp0 R10=fp0
+3202: (07) r1 += -188                 ; frame1: R1=fp-188
+3203: (bf) r2 = r10                   ; frame1: R2=fp0 R10=fp0
+3204: (07) r2 += -152                 ; frame1: R2=fp-152
+; src6, @ main.rs:548
+3205: (71) r3 = *(u8 *)(r1 +0)        ; frame1: R1=fp-188 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-192=mmmm????
+3206: (73) *(u8 *)(r2 +0) = r3        ; frame1: R2=fp-152 R3=scalar(id=24,smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-152=???????scalar(id=24,smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+3207: (71) r3 = *(u8 *)(r1 +1)        ; frame1: R1=fp-188 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-192=mmmm????
+3208: (73) *(u8 *)(r2 +1) = r3        ; frame1: R2=fp-152 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-152=??????mm
+3209: (71) r3 = *(u8 *)(r1 +2)        ; frame1: R1=fp-188 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-192=mmmm????
+3210: (73) *(u8 *)(r2 +2) = r3        ; frame1: R2=fp-152 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-152=?????mmm
+3211: (71) r3 = *(u8 *)(r1 +3)        ; frame1: R1=fp-188 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-192=mmmm????
+3212: (73) *(u8 *)(r2 +3) = r3        ; frame1: R2=fp-152 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-152=????mmmm
+3213: (71) r3 = *(u8 *)(r1 +4)        ; frame1: R1=fp-188 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-184=mmmmmmmm
+3214: (73) *(u8 *)(r2 +4) = r3        ; frame1: R2=fp-152 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-152=???mmmmm
+3215: (71) r3 = *(u8 *)(r1 +5)        ; frame1: R1=fp-188 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-184=mmmmmmmm
+3216: (73) *(u8 *)(r2 +5) = r3        ; frame1: R2=fp-152 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-152=??mmmmmm
+3217: (71) r3 = *(u8 *)(r1 +6)        ; frame1: R1=fp-188 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-184=mmmmmmmm
+3218: (73) *(u8 *)(r2 +6) = r3        ; frame1: R2=fp-152 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-152=?mmmmmmm
+3219: (71) r3 = *(u8 *)(r1 +7)        ; frame1: R1=fp-188 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-184=mmmmmmmm
+3220: (73) *(u8 *)(r2 +7) = r3        ; frame1: R2=fp-152 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-152=mmmmmmmm
+3221: (71) r3 = *(u8 *)(r1 +8)        ; frame1: R1=fp-188 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-184=mmmmmmmm
+3222: (73) *(u8 *)(r2 +8) = r3        ; frame1: R2=fp-152 R3=scalar(id=25,smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-144=???????scalar(id=25,smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+3223: (71) r3 = *(u8 *)(r1 +9)        ; frame1: R1=fp-188 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-184=mmmmmmmm
+3224: (73) *(u8 *)(r2 +9) = r3        ; frame1: R2=fp-152 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-144=??????mm
+3225: (71) r3 = *(u8 *)(r1 +10)       ; frame1: R1=fp-188 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-184=mmmmmmmm
+3226: (73) *(u8 *)(r2 +10) = r3       ; frame1: R2=fp-152 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-144=?????mmm
+3227: (71) r3 = *(u8 *)(r1 +11)       ; frame1: R1=fp-188 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-184=mmmmmmmm
+3228: (73) *(u8 *)(r2 +11) = r3       ; frame1: R2=fp-152 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-144=????mmmm
+3229: (71) r3 = *(u8 *)(r1 +12)       ; frame1: R1=fp-188 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-176=mmmmmmmm
+3230: (73) *(u8 *)(r2 +12) = r3       ; frame1: R2=fp-152 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-144=???mmmmm
+3231: (71) r3 = *(u8 *)(r1 +13)       ; frame1: R1=fp-188 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-176=mmmmmmmm
+3232: (73) *(u8 *)(r2 +13) = r3       ; frame1: R2=fp-152 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-144=??mmmmmm
+3233: (71) r3 = *(u8 *)(r1 +14)       ; frame1: R1=fp-188 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-176=mmmmmmmm
+3234: (73) *(u8 *)(r2 +14) = r3       ; frame1: R2=fp-152 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-144=?mmmmmmm
+3235: (71) r3 = *(u8 *)(r1 +15)       ; frame1: R1=fp-188 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-176=mmmmmmmm
+3236: (73) *(u8 *)(r2 +15) = r3       ; frame1: R2=fp-152 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-144=mmmmmmmm
+; let fkey = SessionKeyV6 { @ main.rs:547
+3237: (79) r1 = *(u64 *)(r10 -312)    ; frame1: R1=scalar(id=26,smin=smin32=0,smax=umax=smax32=umax32=0xffff,var_off=(0x0; 0xffff)) R10=fp0 fp-312=scalar(id=26,smin=smin32=0,smax=umax=smax32=umax32=0xffff,var_off=(0x0; 0xffff))
+3238: (6b) *(u16 *)(r10 -128) = r1    ; frame1: R1=scalar(id=26,smin=smin32=0,smax=umax=smax32=umax32=0xffff,var_off=(0x0; 0xffff)) R10=fp0 fp-128=??????scalar(id=26,smin=smin32=0,smax=umax=smax32=umax32=0xffff,var_off=(0x0; 0xffff))
+3239: (63) *(u32 *)(r10 -132) = r9    ; frame1: R9=scalar(smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff)) R10=fp0 fp-136=mmmm????
+3240: (b7) r1 = 0                     ; frame1: R1=0
+3241: (6b) *(u16 *)(r10 -126) = r1    ; frame1: R1=0 R10=fp0 fp-128=????00mm
+3242: (73) *(u8 *)(r10 -133) = r1     ; frame1: R1=0 R10=fp0 fp-136=mmmm0???
+3243: (79) r1 = *(u64 *)(r10 -304)    ; frame1: R1=6 R10=fp0 fp-304=6
+3244: (73) *(u8 *)(r10 -134) = r1     ; frame1: R1=6 R10=fp0 fp-136=mmmm0m??
+3245: (79) r1 = *(u64 *)(r10 -216)    ; frame1: R1=scalar(id=27,smin=smin32=0,smax=umax=smax32=umax32=0xffff,var_off=(0x0; 0xffff)) R10=fp0 fp-216=scalar(id=27,smin=smin32=0,smax=umax=smax32=umax32=0xffff,var_off=(0x0; 0xffff))
+3246: (6b) *(u16 *)(r10 -136) = r1    ; frame1: R1=scalar(id=27,smin=smin32=0,smax=umax=smax32=umax32=0xffff,var_off=(0x0; 0xffff)) R10=fp0 fp-136=mmmm0mscalar(id=27,smin=smin32=0,smax=umax=smax32=umax32=0xffff,var_off=(0x0; 0xffff))
+; fun(map, key) @ helpers.rs:10
+3247: (18) r1 = 0xffff8904844bdc00    ; frame1: R1=map_ptr(map=SESSION_V6_TO_V,ks=28,vs=56)
+3249: (85) call bpf_map_lookup_elem#1         ; frame1: R0=map_value_or_null(id=28,map=SESSION_V6_TO_V,ks=28,vs=56)
+; let (ext_ip, ext_port) = match sess { @ main.rs:557
+3250: (15) if r0 == 0x0 goto pc+55    ; frame1: R0=map_value(id=28,map=SESSION_V6_TO_V,ks=28,vs=56)
+; let e = (s.ext4, s.ext_port); @ main.rs:559
+3251: (69) r1 = *(u16 *)(r0 +24)      ; frame1: R0=map_value(id=28,map=SESSION_V6_TO_V,ks=28,vs=56) R1=scalar(smin=smin32=0,smax=umax=smax32=umax32=0xffff,var_off=(0x0; 0xffff))
+3252: (7b) *(u64 *)(r10 -296) = r1    ; frame1: R1=scalar(id=29,smin=smin32=0,smax=umax=smax32=umax32=0xffff,var_off=(0x0; 0xffff)) R10=fp0 fp-296=scalar(id=29,smin=smin32=0,smax=umax=smax32=umax32=0xffff,var_off=(0x0; 0xffff))
+3253: (61) r1 = *(u32 *)(r0 +20)      ; frame1: R0=map_value(id=28,map=SESSION_V6_TO_V,ks=28,vs=56) R1=scalar(smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff))
+; fun(map, key) @ helpers.rs:10
+3254: (7b) *(u64 *)(r10 -360) = r1    ; frame1: R1=scalar(id=30,smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff)) R10=fp0 fp-360=scalar(id=30,smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff))
+3255: (bf) r2 = r10                   ; frame1: R2=fp0 R10=fp0
+3256: (07) r2 += -152                 ; frame1: R2=fp-152
+3257: (18) r1 = 0xffff8904844bdc00    ; frame1: R1=map_ptr(map=SESSION_V6_TO_V,ks=28,vs=56)
+3259: (85) call bpf_map_lookup_elem#1         ; frame1: R0=map_value_or_null(id=31,map=SESSION_V6_TO_V,ks=28,vs=56)
+; if let Some(p) = SESSION_V6_TO_V4.get_ptr_mut(key) { @ main.rs:378
+3260: (15) if r0 == 0x0 goto pc+254   ; frame1: R0=map_value(id=31,map=SESSION_V6_TO_V,ks=28,vs=56)
+; s.last_used_ns = now; @ main.rs:381
+3261: (79) r1 = *(u64 *)(r10 -352)    ; frame1: R1=scalar(id=32) R10=fp0 fp-352=scalar(id=32)
+3262: (7b) *(u64 *)(r0 +40) = r1      ; frame1: R0=map_value(id=31,map=SESSION_V6_TO_V,ks=28,vs=56) R1=scalar(id=32)
+; if s.proto == PROTO_TCP { @ main.rs:382
+3263: (71) r1 = *(u8 *)(r0 +18)       ; frame1: R0=map_value(id=31,map=SESSION_V6_TO_V,ks=28,vs=56) R1=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+3264: (55) if r1 != 0x6 goto pc+250   ; frame1: R1=6
+3265: (b7) r1 = 4                     ; frame1: R1=4
+; let rst = flags & TCP_RST != 0; @ state.rs:98
+3266: (79) r2 = *(u64 *)(r10 -320)    ; frame1: R2=scalar(id=33,smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R10=fp0 fp-320=scalar(id=33,smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+3267: (57) r2 &= 4                    ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=4,var_off=(0x0; 0x4))
+; if rst { @ state.rs:99
+3268: (55) if r2 != 0x0 goto pc+245   ; frame1: R2=0
+; let cur = match s.tcp_state { @ main.rs:383
+3269: (71) r1 = *(u8 *)(r0 +19)       ; frame1: R0=map_value(id=31,map=SESSION_V6_TO_V,ks=28,vs=56) R1=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+3270: (b7) r3 = 5                     ; frame1: R3=5
+3271: (bf) r2 = r1                    ; frame1: R1=scalar(id=34,smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R2=scalar(id=34,smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+3272: (2d) if r3 > r1 goto pc+1       ; frame1: R1=scalar(id=34,smin=umin=smin32=umin32=5,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R2=scalar(id=34,smin=umin=smin32=umin32=5,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R3=5
+3273: (b7) r2 = 0                     ; frame1: R2=0
+; match self { @ state.rs:102
+3274: (65) if r2 s> 0x2 goto pc+239   ; frame1: R2=0
+3275: (15) if r2 == 0x0 goto pc+227   ; frame1: R2=0
+; 3 => (hash % 3) as usize, @ state.rs:541
+3503: (79) r2 = *(u64 *)(r10 -320)    ; frame1: R2=scalar(id=35,smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R10=fp0 fp-320=scalar(id=35,smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+3504: (57) r2 &= 16                   ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=16,var_off=(0x0; 0x10))
+3505: (b7) r1 = 0                     ; frame1: R1=0
+3506: (15) if r2 == 0x0 goto pc+7     ; frame1: R2=16
+3507: (b7) r1 = 2                     ; frame1: R1=2
+3508: (05) goto pc+5
+; s.tcp_state = cur.advance(flags, from_v6) as u8; @ main.rs:390
+3514: (73) *(u8 *)(r0 +19) = r1       ; frame1:
+3515: (bf) r1 = r10                   ; frame1: R1=fp0 R10=fp0
+3516: (07) r1 += -188                 ; frame1: R1=fp-188
+3517: (bf) r2 = r10                   ; frame1: R2=fp0 R10=fp0
+3518: (07) r2 += -120                 ; frame1: R2=fp-120
+; ipv6: *client6, @ main.rs:419
+3519: (71) r3 = *(u8 *)(r1 +0)        ; frame1: R1=fp-188 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-192=mmmm????
+3520: (73) *(u8 *)(r2 +0) = r3        ; frame1: R2=fp-120 R3=scalar(id=36,smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-120=????mmmscalar(id=36,smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+3521: (71) r3 = *(u8 *)(r1 +1)        ; frame1: R1=fp-188 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-192=mmmm????
+3522: (73) *(u8 *)(r2 +1) = r3        ; frame1: R2=fp-120 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-120=????mmmm
+3523: (71) r3 = *(u8 *)(r1 +2)        ; frame1: R1=fp-188 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-192=mmmm????
+3524: (73) *(u8 *)(r2 +2) = r3        ; frame1: R2=fp-120 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-120=????mmmm
+3525: (71) r3 = *(u8 *)(r1 +3)        ; frame1: R1=fp-188 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-192=mmmm????
+3526: (73) *(u8 *)(r2 +3) = r3        ; frame1: R2=fp-120 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-120=????mmmm
+3527: (71) r3 = *(u8 *)(r1 +4)        ; frame1: R1=fp-188 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-184=mmmmmmmm
+3528: (73) *(u8 *)(r2 +4) = r3        ; frame1: R2=fp-120 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-120=???mmmmm
+3529: (71) r3 = *(u8 *)(r1 +5)        ; frame1: R1=fp-188 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-184=mmmmmmmm
+3530: (73) *(u8 *)(r2 +5) = r3        ; frame1: R2=fp-120 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-120=??mmmmmm
+3531: (71) r3 = *(u8 *)(r1 +6)        ; frame1: R1=fp-188 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-184=mmmmmmmm
+3532: (73) *(u8 *)(r2 +6) = r3        ; frame1: R2=fp-120 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-120=?mmmmmmm
+3533: (71) r3 = *(u8 *)(r1 +7)        ; frame1: R1=fp-188 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-184=mmmmmmmm
+3534: (73) *(u8 *)(r2 +7) = r3        ; frame1: R2=fp-120 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-120=mmmmmmmm
+3535: (71) r3 = *(u8 *)(r1 +8)        ; frame1: R1=fp-188 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-184=mmmmmmmm
+3536: (73) *(u8 *)(r2 +8) = r3        ; frame1: R2=fp-120 R3=scalar(id=37,smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-112=???????scalar(id=37,smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+3537: (71) r3 = *(u8 *)(r1 +9)        ; frame1: R1=fp-188 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-184=mmmmmmmm
+3538: (73) *(u8 *)(r2 +9) = r3        ; frame1: R2=fp-120 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-112=??????mm
+3539: (71) r3 = *(u8 *)(r1 +10)       ; frame1: R1=fp-188 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-184=mmmmmmmm
+3540: (73) *(u8 *)(r2 +10) = r3       ; frame1: R2=fp-120 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-112=?????mmm
+3541: (71) r3 = *(u8 *)(r1 +11)       ; frame1: R1=fp-188 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-184=mmmmmmmm
+3542: (73) *(u8 *)(r2 +11) = r3       ; frame1: R2=fp-120 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-112=????mmmm
+3543: (71) r3 = *(u8 *)(r1 +12)       ; frame1: R1=fp-188 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-176=mmmmmmmm
+3544: (73) *(u8 *)(r2 +12) = r3       ; frame1: R2=fp-120 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-112=???mmmmm
+3545: (71) r3 = *(u8 *)(r1 +13)       ; frame1: R1=fp-188 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-176=mmmmmmmm
+3546: (73) *(u8 *)(r2 +13) = r3       ; frame1: R2=fp-120 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-112=??mmmmmm
+3547: (71) r3 = *(u8 *)(r1 +14)       ; frame1: R1=fp-188 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-176=mmmmmmmm
+3548: (73) *(u8 *)(r2 +14) = r3       ; frame1: R2=fp-120 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-112=?mmmmmmm
+3549: (71) r3 = *(u8 *)(r1 +15)       ; frame1: R1=fp-188 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-176=mmmmmmmm
+3550: (73) *(u8 *)(r2 +15) = r3       ; frame1: R2=fp-120 R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-112=mmmmmmmm
+3551: (b7) r1 = 0                     ; frame1: R1=0
+; let k = BibKey { @ main.rs:418
+3552: (73) *(u8 *)(r10 -101) = r1     ; frame1: R1=0 R10=fp0 fp-104=????0???
+3553: (79) r1 = *(u64 *)(r10 -304)    ; frame1: R1=6 R10=fp0 fp-304=6
+3554: (73) *(u8 *)(r10 -102) = r1     ; frame1: R1=6 R10=fp0 fp-104=????0m??
+3555: (79) r1 = *(u64 *)(r10 -216)    ; frame1: R1=scalar(id=27,smin=smin32=0,smax=umax=smax32=umax32=0xffff,var_off=(0x0; 0xffff)) R10=fp0 fp-216=scalar(id=27,smin=smin32=0,smax=umax=smax32=umax32=0xffff,var_off=(0x0; 0xffff))
+3556: (6b) *(u16 *)(r10 -104) = r1    ; frame1: R1=scalar(id=27,smin=smin32=0,smax=umax=smax32=umax32=0xffff,var_off=(0x0; 0xffff)) R10=fp0 fp-104=????0mscalar(id=27,smin=smin32=0,smax=umax=smax32=umax32=0xffff,var_off=(0x0; 0xffff))
+; fun(map, key) @ helpers.rs:10
+3557: (18) r1 = 0xffff8904b4a53400    ; frame1: R1=map_ptr(map=BIB_V6_TO_V4,ks=20,vs=24)
+3559: (85) call bpf_map_lookup_elem#1         ; frame1: R0=map_value_or_null(id=38,map=BIB_V6_TO_V4,ks=20,vs=24)
+; if let Some(p) = BIB_V6_TO_V4.get_ptr_mut(&k) { @ main.rs:424
+3560: (15) if r0 == 0x0 goto pc+2     ; frame1: R0=map_value(id=38,map=BIB_V6_TO_V4,ks=20,vs=24)
+; (*p).last_used_ns = now; @ main.rs:426
+3561: (79) r1 = *(u64 *)(r10 -352)    ; frame1: R1=scalar(id=39) R10=fp0 fp-352=scalar(id=39)
+3562: (7b) *(u64 *)(r0 +16) = r1      ; frame1:
+; let s = zext(src_off); @ parse.rs:202
+3563: (79) r1 = *(u64 *)(r10 -200)    ; frame1: R1=58 R10=fp0 fp-200=58
+3564: (63) *(u32 *)(r10 -120) = r1    ; frame1: R1=58 R10=fp0 fp-120=mmmm58
+; intrinsics::volatile_load(src) @ mod.rs:2163
+3565: (61) r1 = *(u32 *)(r10 -120)    ; frame1: R1=58 R10=fp0 fp-120=mmmm58
+; let new_l4 = l3 + IPV4_MIN_LEN as u32; @ main.rs:599
+3566: (79) r2 = *(u64 *)(r10 -224)    ; frame1: R2=18 R10=fp0 fp-224=18
+3567: (07) r2 += 20                   ; frame1: R2=38
+3568: (7b) *(u64 *)(r10 -200) = r2    ; frame1: R2=38 R10=fp0 fp-200=38
+; let d = zext(dst_off); @ parse.rs:203
+3569: (63) *(u32 *)(r10 -120) = r2    ; frame1: R2=38 R10=fp0 fp-120=mmmm38
+; intrinsics::volatile_load(src) @ mod.rs:2163
+3570: (61) r2 = *(u32 *)(r10 -120)    ; frame1: R2=38 R10=fp0 fp-120=mmmm38
+; let l = zext(len); @ parse.rs:204
+3571: (79) r3 = *(u64 *)(r10 -344)    ; frame1: R3=scalar(id=40) R10=fp0 fp-344=scalar(id=40)
+3572: (63) *(u32 *)(r10 -120) = r3    ; frame1: R3=scalar(id=40) R10=fp0 fp-120=mmmmscalar()
+; intrinsics::volatile_load(src) @ mod.rs:2163
+3573: (61) r3 = *(u32 *)(r10 -120)    ; frame1: R3=scalar(smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff)) R10=fp0 fp-120=mmmmpppp
+; if l > MAX_COPY as usize { @ parse.rs:205
+3574: (25) if r3 > 0x800 goto pc+2197         ; frame1: R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=2048,var_off=(0x0; 0xfff))
+; let src_p = (data + s) as *const u8; @ parse.rs:208
+3575: (0f) r1 += r7                   ; frame1: R1=pkt(r=78,imm=58) R7=pkt(r=78)
+; unsafe { intrinsics::offset(self, count) } @ const_ptr.rs:872
+3576: (bf) r4 = r1                    ; frame1: R1=pkt(r=78,imm=58) R4=pkt(r=78,imm=58)
+3577: (0f) r4 += r3                   ; frame1: R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=2048,var_off=(0x0; 0xfff)) R4=pkt(id=41,r=0,smin=umin=smin32=umin32=58,smax=umax=smax32=umax32=2106,var_off=(0x0; 0xfff))
+; if unsafe { src_p.add(l) > end || (dst_p as *const u8).add(l) > end } { @ parse.rs:212
+3578: (2d) if r4 > r6 goto pc+2193    ; frame1: R4=pkt(id=41,r=2106,smin=umin=smin32=umin32=58,smax=umax=smax32=umax32=2106,var_off=(0x0; 0xfff)) R6=pkt_end()
+3579: (0f) r2 += r7                   ; frame1: R2=pkt(r=78,imm=38) R7=pkt(r=78)
+3580: (bf) r4 = r2                    ; frame1: R2=pkt(r=78,imm=38) R4=pkt(r=78,imm=38)
+3581: (0f) r4 += r3                   ; frame1: R3=scalar(smin=smin32=0,smax=umax=smax32=umax32=2048,var_off=(0x0; 0xfff)) R4=pkt(id=42,r=0,smin=umin=smin32=umin32=38,smax=umax=smax32=umax32=2086,var_off=(0x0; 0xfff))
+3582: (2d) if r4 > r6 goto pc+2189    ; frame1: R4=pkt(id=42,r=2086,smin=umin=smin32=umin32=38,smax=umax=smax32=umax32=2086,var_off=(0x0; 0xfff)) R6=pkt_end()
+; while i < l { @ parse.rs:220
+3583: (15) if r3 == 0x0 goto pc+15    ; frame1: R3=scalar(smin=umin=smin32=umin32=1,smax=umax=smax32=umax32=2048,var_off=(0x0; 0xfff))
+3584: (b7) r4 = 0                     ; frame1: R4=0
+; unsafe { intrinsics::offset(self, count) } @ const_ptr.rs:872
+3585: (bf) r5 = r1                    ; frame1: R1=pkt(r=78,imm=58) R5=pkt(r=78,imm=58)
+3586: (0f) r5 += r4                   ; frame1: R4=0 R5=pkt(r=78,imm=58)
+; if unsafe { s_cur.add(1) > end || (d_cur as *const u8).add(1) > end } { @ parse.rs:221
+3587: (bf) r0 = r5                    ; frame1: R0=pkt(r=78,imm=58) R5=pkt(r=78,imm=58)
+3588: (07) r0 += 1                    ; frame1: R0=pkt(r=78,imm=59)
+3589: (2d) if r0 > r6 goto pc+2182    ; frame1: R0=pkt(r=78,imm=59) R6=pkt_end()
+3590: (bf) r0 = r2                    ; frame1: R0=pkt(r=78,imm=38) R2=pkt(r=78,imm=38)
+3591: (0f) r0 += r4                   ; frame1: R0=pkt(r=78,imm=38) R4=0
+3592: (bf) r7 = r0                    ; frame1: R0=pkt(r=78,imm=38) R7=pkt(r=78,imm=38)
+3593: (07) r7 += 1                    ; frame1: R7=pkt(r=78,imm=39)
+3594: (2d) if r7 > r6 goto pc+2177    ; frame1: R6=pkt_end() R7=pkt(r=78,imm=39)
+; *d_cur = *s_cur; @ parse.rs:225
+3595: (71) r5 = *(u8 *)(r5 +0)        ; frame1: R5=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+3596: (73) *(u8 *)(r0 +0) = r5        ; frame1: R0=pkt(r=78,imm=38) R5=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+; i += 1; @ parse.rs:229
+3597: (07) r4 += 1                    ; frame1: R4=1
+; if i >= MAX_COPY as usize { @ parse.rs:230
+3598: (2d) if r3 > r4 goto pc-14      ; frame1: R3=1 R4=1
+; fun(xdp_md, delta) @ helpers.rs:627
+3599: (79) r1 = *(u64 *)(r10 -232)    ; frame1: R1=ctx() R10=fp0 fp-232=ctx()
+3600: (18) r2 = 0xffffffec            ; frame1: R2=0xffffffec
+3602: (85) call bpf_xdp_adjust_tail#65        ; frame1: R0=scalar()
+; if rc != 0 { @ main.rs:609
+3603: (15) if r0 == 0x0 goto pc+9 3613: frame1: R8=scalar(umin=14) R9=scalar(smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff)) R10=fp0 fp-104=????0mscalar(id=27,smin=smin32=0,smax=umax=smax32=umax32=0xffff,var_off=(0x0; 0xffff)) fp-112=mmmmmmmm fp-120=mmmmpppp fp-128=????00mm fp-136=mmmm0mscalar(id=27,smin=smin32=0,smax=umax=smax32=umax32=0xffff,var_off=(0x0; 0xffff)) fp-144=mmmmmmmm fp-152=mmmmmmmm fp-160=mmmmmmmm fp-168=mmmmmmmm fp-176=mmmmmmmm fp-184=mmmmmmmm fp-192=mmmm???? fp-200=38 fp-208=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-224=18 fp-232=ctx() fp-240=24 fp-248=22 fp-256=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-264=scalar(smin=umin=smin32=umin32=2,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-272=42 fp-280=map_value(map=CONFIG,ks=4,vs=120) fp-288=26 fp-296=scalar(smin=smin32=0,smax=umax=smax32=umax32=0xffff,var_off=(0x0; 0xffff)) fp-304=6 fp-312=scalar(smin=smin32=0,smax=umax=smax32=umax32=0xffff,var_off=(0x0; 0xffff)) fp-320=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) fp-328=1 fp-336=0 fp-344=scalar() fp-352=scalar() fp-360=scalar(smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff))
+; if !ptr.is_null() { @ non_null.rs:280
+3613: (79) r2 = *(u64 *)(r10 -232)    ; frame1: R2=ctx() R10=fp0 fp-232=ctx()
+; unsafe { (*self.ctx).data_end as usize } @ xdp.rs:21
+3614: (61) r1 = *(u32 *)(r2 +4)       ; frame1: R1=pkt_end() R2=ctx()
+; unsafe { (*self.ctx).data as usize } @ xdp.rs:16
+3615: (61) r4 = *(u32 *)(r2 +0)       ; frame1: R2=ctx() R4=pkt(r=0)
+; let d = zext(dst); @ parse.rs:167
+3616: (b7) r3 = 0                     ; frame1: R3=0
+3617: (63) *(u32 *)(r10 -120) = r3    ; frame1: R3=0 R10=fp0 fp-120=mmmm0
+; intrinsics::volatile_load(src) @ mod.rs:2163
+3618: (61) r2 = *(u32 *)(r10 -120)    ; frame1: R2=0 R10=fp0 fp-120=mmmm0
+; let m = zext(len); @ parse.rs:168
+3619: (b7) r5 = 6                     ; frame1: R5=6
+3620: (63) *(u32 *)(r10 -120) = r5    ; frame1: R5=6 R10=fp0 fp-120=mmmm6
+3621: (7b) *(u64 *)(r10 -216) = r4    ; frame1: R4=pkt(r=0) R10=fp0 fp-216=pkt(r=0)
+; let p = (data + d) as *mut u8; @ parse.rs:169
+3622: (0f) r2 += r4                   ; frame1: R2=pkt(r=0) R4=pkt(r=0)
+; intrinsics::volatile_load(src) @ mod.rs:2163
+3623: (61) r5 = *(u32 *)(r10 -120)    ; frame1: R5=6 R10=fp0 fp-120=mmmm6
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+3624: (bf) r0 = r2                    ; frame1: R0=pkt(r=0) R2=pkt(r=0)
+3625: (0f) r0 += r5                   ; frame1: R0=pkt(r=0,imm=6) R5=6
+; if unsafe { p.add(m) } > end { @ parse.rs:171
+3626: (2d) if r0 > r1 goto pc+309     ; frame1: R0=pkt(r=6,imm=6) R1=pkt_end()
+; while i < m { @ parse.rs:177
+3627: (15) if r5 == 0x0 goto pc+14    ; frame1: R5=6
+3628: (b7) r0 = 0                     ; frame1: R0=0
+; if write_bytes(data, data_end, 0, cfg.next_hop_v4.as_ptr(), 6).is_err() @ main.rs:619
+3629: (79) r6 = *(u64 *)(r10 -280)    ; frame1: R6=map_value(map=CONFIG,ks=4,vs=120) R10=fp0 fp-280=map_value(map=CONFIG,ks=4,vs=120)
+3630: (07) r6 += 100                  ; frame1: R6=map_value(map=CONFIG,ks=4,vs=120,imm=100)
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+3631: (bf) r4 = r2                    ; frame1: R2=pkt(r=6) R4=pkt(r=6)
+3632: (0f) r4 += r0                   ; frame1: R0=0 R4=pkt(r=6)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:178
+3633: (bf) r7 = r4                    ; frame1: R4=pkt(r=6) R7=pkt(r=6)
+3634: (07) r7 += 1                    ; frame1: R7=pkt(r=6,imm=1)
+3635: (2d) if r7 > r1 goto pc+300     ; frame1: R1=pkt_end() R7=pkt(r=6,imm=1)
+3636: (bf) r7 = r6                    ; frame1: R6=map_value(map=CONFIG,ks=4,vs=120,imm=100) R7=map_value(map=CONFIG,ks=4,vs=120,imm=100)
+3637: (0f) r7 += r0                   ; frame1: R0=0 R7=map_value(map=CONFIG,ks=4,vs=120,imm=100)
+; *p_cur = *s_cur; @ parse.rs:182
+3638: (71) r7 = *(u8 *)(r7 +0)        ; frame1: R7=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+3639: (73) *(u8 *)(r4 +0) = r7        ; frame1: R4=pkt(r=6) R7=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+; i += 1; @ parse.rs:186
+3640: (07) r0 += 1                    ; frame1: R0=1
+; while i < m { @ parse.rs:177
+3641: (2d) if r5 > r0 goto pc-11      ; frame1: R0=1 R5=6
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+3631: (bf) r4 = r2                    ; frame1: R2=pkt(r=6) R4=pkt(r=6)
+3632: (0f) r4 += r0                   ; frame1: R0=1 R4=pkt(r=6,imm=1)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:178
+3633: (bf) r7 = r4                    ; frame1: R4=pkt(r=6,imm=1) R7=pkt(r=6,imm=1)
+3634: (07) r7 += 1                    ; frame1: R7=pkt(r=6,imm=2)
+3635: (2d) if r7 > r1 goto pc+300     ; frame1: R1=pkt_end() R7=pkt(r=6,imm=2)
+3636: (bf) r7 = r6                    ; frame1: R6=map_value(map=CONFIG,ks=4,vs=120,imm=100) R7=map_value(map=CONFIG,ks=4,vs=120,imm=100)
+3637: (0f) r7 += r0                   ; frame1: R0=1 R7=map_value(map=CONFIG,ks=4,vs=120,imm=101)
+; *p_cur = *s_cur; @ parse.rs:182
+3638: (71) r7 = *(u8 *)(r7 +0)        ; frame1: R7=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+3639: (73) *(u8 *)(r4 +0) = r7        ; frame1: R4=pkt(r=6,imm=1) R7=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+; i += 1; @ parse.rs:186
+3640: (07) r0 += 1                    ; frame1: R0=2
+; while i < m { @ parse.rs:177
+3641: (2d) if r5 > r0 goto pc-11      ; frame1: R0=2 R5=6
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+3631: (bf) r4 = r2                    ; frame1: R2=pkt(r=6) R4=pkt(r=6)
+3632: (0f) r4 += r0                   ; frame1: R0=2 R4=pkt(r=6,imm=2)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:178
+3633: (bf) r7 = r4                    ; frame1: R4=pkt(r=6,imm=2) R7=pkt(r=6,imm=2)
+3634: (07) r7 += 1                    ; frame1: R7=pkt(r=6,imm=3)
+3635: (2d) if r7 > r1 goto pc+300     ; frame1: R1=pkt_end() R7=pkt(r=6,imm=3)
+3636: (bf) r7 = r6                    ; frame1: R6=map_value(map=CONFIG,ks=4,vs=120,imm=100) R7=map_value(map=CONFIG,ks=4,vs=120,imm=100)
+3637: (0f) r7 += r0                   ; frame1: R0=2 R7=map_value(map=CONFIG,ks=4,vs=120,imm=102)
+; *p_cur = *s_cur; @ parse.rs:182
+3638: (71) r7 = *(u8 *)(r7 +0)        ; frame1: R7=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+3639: (73) *(u8 *)(r4 +0) = r7        ; frame1: R4=pkt(r=6,imm=2) R7=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+; i += 1; @ parse.rs:186
+3640: (07) r0 += 1                    ; frame1: R0=3
+; while i < m { @ parse.rs:177
+3641: (2d) if r5 > r0 goto pc-11      ; frame1: R0=3 R5=6
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+3631: (bf) r4 = r2                    ; frame1: R2=pkt(r=6) R4=pkt(r=6)
+3632: (0f) r4 += r0                   ; frame1: R0=3 R4=pkt(r=6,imm=3)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:178
+3633: (bf) r7 = r4                    ; frame1: R4=pkt(r=6,imm=3) R7=pkt(r=6,imm=3)
+3634: (07) r7 += 1                    ; frame1: R7=pkt(r=6,imm=4)
+3635: (2d) if r7 > r1 goto pc+300     ; frame1: R1=pkt_end() R7=pkt(r=6,imm=4)
+3636: (bf) r7 = r6                    ; frame1: R6=map_value(map=CONFIG,ks=4,vs=120,imm=100) R7=map_value(map=CONFIG,ks=4,vs=120,imm=100)
+3637: (0f) r7 += r0                   ; frame1: R0=3 R7=map_value(map=CONFIG,ks=4,vs=120,imm=103)
+; *p_cur = *s_cur; @ parse.rs:182
+3638: (71) r7 = *(u8 *)(r7 +0)        ; frame1: R7=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+3639: (73) *(u8 *)(r4 +0) = r7        ; frame1: R4=pkt(r=6,imm=3) R7=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+; i += 1; @ parse.rs:186
+3640: (07) r0 += 1                    ; frame1: R0=4
+; while i < m { @ parse.rs:177
+3641: (2d) if r5 > r0 goto pc-11      ; frame1: R0=4 R5=6
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+3631: (bf) r4 = r2                    ; frame1: R2=pkt(r=6) R4=pkt(r=6)
+3632: (0f) r4 += r0                   ; frame1: R0=4 R4=pkt(r=6,imm=4)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:178
+3633: (bf) r7 = r4                    ; frame1: R4=pkt(r=6,imm=4) R7=pkt(r=6,imm=4)
+3634: (07) r7 += 1                    ; frame1: R7=pkt(r=6,imm=5)
+3635: (2d) if r7 > r1 goto pc+300     ; frame1: R1=pkt_end() R7=pkt(r=6,imm=5)
+3636: (bf) r7 = r6                    ; frame1: R6=map_value(map=CONFIG,ks=4,vs=120,imm=100) R7=map_value(map=CONFIG,ks=4,vs=120,imm=100)
+3637: (0f) r7 += r0                   ; frame1: R0=4 R7=map_value(map=CONFIG,ks=4,vs=120,imm=104)
+; *p_cur = *s_cur; @ parse.rs:182
+3638: (71) r7 = *(u8 *)(r7 +0)        ; frame1: R7=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+3639: (73) *(u8 *)(r4 +0) = r7        ; frame1: R4=pkt(r=6,imm=4) R7=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+; i += 1; @ parse.rs:186
+3640: (07) r0 += 1                    ; frame1: R0=5
+; while i < m { @ parse.rs:177
+3641: (2d) if r5 > r0 goto pc-11      ; frame1: R0=5 R5=6
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+3631: (bf) r4 = r2                    ; frame1: R2=pkt(r=6) R4=pkt(r=6)
+3632: (0f) r4 += r0                   ; frame1: R0=5 R4=pkt(r=6,imm=5)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:178
+3633: (bf) r7 = r4                    ; frame1: R4=pkt(r=6,imm=5) R7=pkt(r=6,imm=5)
+3634: (07) r7 += 1                    ; frame1: R7=pkt(r=6,imm=6)
+3635: (2d) if r7 > r1 goto pc+300     ; frame1: R1=pkt_end() R7=pkt(r=6,imm=6)
+3636: (bf) r7 = r6                    ; frame1: R6=map_value(map=CONFIG,ks=4,vs=120,imm=100) R7=map_value(map=CONFIG,ks=4,vs=120,imm=100)
+3637: (0f) r7 += r0                   ; frame1: R0=5 R7=map_value(map=CONFIG,ks=4,vs=120,imm=105)
+; *p_cur = *s_cur; @ parse.rs:182
+3638: (71) r7 = *(u8 *)(r7 +0)        ; frame1: R7=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+3639: (73) *(u8 *)(r4 +0) = r7        ; frame1: R4=pkt(r=6,imm=5) R7=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+; i += 1; @ parse.rs:186
+3640: (07) r0 += 1                    ; frame1: R0=6
+; while i < m { @ parse.rs:177
+3641: (2d) if r5 > r0 goto pc-11      ; frame1: R0=6 R5=6
+; let d = zext(dst); @ parse.rs:167
+3642: (b7) r2 = 6                     ; frame1: R2=6
+3643: (63) *(u32 *)(r10 -120) = r2    ; frame1: R2=6 R10=fp0 fp-120=mmmm6
+; intrinsics::volatile_load(src) @ mod.rs:2163
+3644: (61) r4 = *(u32 *)(r10 -120)    ; frame1: R4=6 R10=fp0 fp-120=mmmm6
+; let m = zext(len); @ parse.rs:168
+3645: (63) *(u32 *)(r10 -120) = r2    ; frame1: R2=6 R10=fp0 fp-120=mmmm6
+; let p = (data + d) as *mut u8; @ parse.rs:169
+3646: (79) r2 = *(u64 *)(r10 -216)    ; frame1: R2=pkt(r=6) R10=fp0 fp-216=pkt(r=6)
+3647: (0f) r4 += r2                   ; frame1: R2=pkt(r=6) R4=pkt(r=6,imm=6)
+; intrinsics::volatile_load(src) @ mod.rs:2163
+3648: (61) r5 = *(u32 *)(r10 -120)    ; frame1: R5=6 R10=fp0 fp-120=mmmm6
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+3649: (bf) r2 = r4                    ; frame1: R2=pkt(r=6,imm=6) R4=pkt(r=6,imm=6)
+3650: (0f) r2 += r5                   ; frame1: R2=pkt(r=6,imm=12) R5=6
+; if unsafe { p.add(m) } > end { @ parse.rs:171
+3651: (2d) if r2 > r1 goto pc+284     ; frame1: R1=pkt_end() R2=pkt(r=12,imm=12)
+; while i < m { @ parse.rs:177
+3652: (15) if r5 == 0x0 goto pc+14    ; frame1: R5=6
+3653: (b7) r0 = 0                     ; frame1: R0=0
+; || write_bytes(data, data_end, 6, cfg.mac_wan.as_ptr(), 6).is_err() @ main.rs:620
+3654: (79) r6 = *(u64 *)(r10 -280)    ; frame1: R6=map_value(map=CONFIG,ks=4,vs=120) R10=fp0 fp-280=map_value(map=CONFIG,ks=4,vs=120)
+3655: (07) r6 += 88                   ; frame1: R6=map_value(map=CONFIG,ks=4,vs=120,imm=88)
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+3656: (bf) r7 = r4                    ; frame1: R4=pkt(r=12,imm=6) R7=pkt(r=12,imm=6)
+3657: (0f) r7 += r0                   ; frame1: R0=0 R7=pkt(r=12,imm=6)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:178
+3658: (bf) r2 = r7                    ; frame1: R2=pkt(r=12,imm=6) R7=pkt(r=12,imm=6)
+3659: (07) r2 += 1                    ; frame1: R2=pkt(r=12,imm=7)
+3660: (2d) if r2 > r1 goto pc+275     ; frame1: R1=pkt_end() R2=pkt(r=12,imm=7)
+3661: (bf) r2 = r6                    ; frame1: R2=map_value(map=CONFIG,ks=4,vs=120,imm=88) R6=map_value(map=CONFIG,ks=4,vs=120,imm=88)
+3662: (0f) r2 += r0                   ; frame1: R0=0 R2=map_value(map=CONFIG,ks=4,vs=120,imm=88)
+; *p_cur = *s_cur; @ parse.rs:182
+3663: (71) r2 = *(u8 *)(r2 +0)        ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+3664: (73) *(u8 *)(r7 +0) = r2        ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R7=pkt(r=12,imm=6)
+; i += 1; @ parse.rs:186
+3665: (07) r0 += 1                    ; frame1: R0=1
+; while i < m { @ parse.rs:177
+3666: (2d) if r5 > r0 goto pc-11      ; frame1: R0=1 R5=6
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+3656: (bf) r7 = r4                    ; frame1: R4=pkt(r=12,imm=6) R7=pkt(r=12,imm=6)
+3657: (0f) r7 += r0                   ; frame1: R0=1 R7=pkt(r=12,imm=7)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:178
+3658: (bf) r2 = r7                    ; frame1: R2=pkt(r=12,imm=7) R7=pkt(r=12,imm=7)
+3659: (07) r2 += 1                    ; frame1: R2=pkt(r=12,imm=8)
+3660: (2d) if r2 > r1 goto pc+275     ; frame1: R1=pkt_end() R2=pkt(r=12,imm=8)
+3661: (bf) r2 = r6                    ; frame1: R2=map_value(map=CONFIG,ks=4,vs=120,imm=88) R6=map_value(map=CONFIG,ks=4,vs=120,imm=88)
+3662: (0f) r2 += r0                   ; frame1: R0=1 R2=map_value(map=CONFIG,ks=4,vs=120,imm=89)
+; *p_cur = *s_cur; @ parse.rs:182
+3663: (71) r2 = *(u8 *)(r2 +0)        ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+3664: (73) *(u8 *)(r7 +0) = r2        ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R7=pkt(r=12,imm=7)
+; i += 1; @ parse.rs:186
+3665: (07) r0 += 1                    ; frame1: R0=2
+; while i < m { @ parse.rs:177
+3666: (2d) if r5 > r0 goto pc-11      ; frame1: R0=2 R5=6
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+3656: (bf) r7 = r4                    ; frame1: R4=pkt(r=12,imm=6) R7=pkt(r=12,imm=6)
+3657: (0f) r7 += r0                   ; frame1: R0=2 R7=pkt(r=12,imm=8)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:178
+3658: (bf) r2 = r7                    ; frame1: R2=pkt(r=12,imm=8) R7=pkt(r=12,imm=8)
+3659: (07) r2 += 1                    ; frame1: R2=pkt(r=12,imm=9)
+3660: (2d) if r2 > r1 goto pc+275     ; frame1: R1=pkt_end() R2=pkt(r=12,imm=9)
+3661: (bf) r2 = r6                    ; frame1: R2=map_value(map=CONFIG,ks=4,vs=120,imm=88) R6=map_value(map=CONFIG,ks=4,vs=120,imm=88)
+3662: (0f) r2 += r0                   ; frame1: R0=2 R2=map_value(map=CONFIG,ks=4,vs=120,imm=90)
+; *p_cur = *s_cur; @ parse.rs:182
+3663: (71) r2 = *(u8 *)(r2 +0)        ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+3664: (73) *(u8 *)(r7 +0) = r2        ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R7=pkt(r=12,imm=8)
+; i += 1; @ parse.rs:186
+3665: (07) r0 += 1                    ; frame1: R0=3
+; while i < m { @ parse.rs:177
+3666: (2d) if r5 > r0 goto pc-11      ; frame1: R0=3 R5=6
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+3656: (bf) r7 = r4                    ; frame1: R4=pkt(r=12,imm=6) R7=pkt(r=12,imm=6)
+3657: (0f) r7 += r0                   ; frame1: R0=3 R7=pkt(r=12,imm=9)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:178
+3658: (bf) r2 = r7                    ; frame1: R2=pkt(r=12,imm=9) R7=pkt(r=12,imm=9)
+3659: (07) r2 += 1                    ; frame1: R2=pkt(r=12,imm=10)
+3660: (2d) if r2 > r1 goto pc+275     ; frame1: R1=pkt_end() R2=pkt(r=12,imm=10)
+3661: (bf) r2 = r6                    ; frame1: R2=map_value(map=CONFIG,ks=4,vs=120,imm=88) R6=map_value(map=CONFIG,ks=4,vs=120,imm=88)
+3662: (0f) r2 += r0                   ; frame1: R0=3 R2=map_value(map=CONFIG,ks=4,vs=120,imm=91)
+; *p_cur = *s_cur; @ parse.rs:182
+3663: (71) r2 = *(u8 *)(r2 +0)        ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+3664: (73) *(u8 *)(r7 +0) = r2        ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R7=pkt(r=12,imm=9)
+; i += 1; @ parse.rs:186
+3665: (07) r0 += 1                    ; frame1: R0=4
+; while i < m { @ parse.rs:177
+3666: (2d) if r5 > r0 goto pc-11      ; frame1: R0=4 R5=6
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+3656: (bf) r7 = r4                    ; frame1: R4=pkt(r=12,imm=6) R7=pkt(r=12,imm=6)
+3657: (0f) r7 += r0                   ; frame1: R0=4 R7=pkt(r=12,imm=10)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:178
+3658: (bf) r2 = r7                    ; frame1: R2=pkt(r=12,imm=10) R7=pkt(r=12,imm=10)
+3659: (07) r2 += 1                    ; frame1: R2=pkt(r=12,imm=11)
+3660: (2d) if r2 > r1 goto pc+275     ; frame1: R1=pkt_end() R2=pkt(r=12,imm=11)
+3661: (bf) r2 = r6                    ; frame1: R2=map_value(map=CONFIG,ks=4,vs=120,imm=88) R6=map_value(map=CONFIG,ks=4,vs=120,imm=88)
+3662: (0f) r2 += r0                   ; frame1: R0=4 R2=map_value(map=CONFIG,ks=4,vs=120,imm=92)
+; *p_cur = *s_cur; @ parse.rs:182
+3663: (71) r2 = *(u8 *)(r2 +0)        ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+3664: (73) *(u8 *)(r7 +0) = r2        ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R7=pkt(r=12,imm=10)
+; i += 1; @ parse.rs:186
+3665: (07) r0 += 1                    ; frame1: R0=5
+; while i < m { @ parse.rs:177
+3666: (2d) if r5 > r0 goto pc-11      ; frame1: R0=5 R5=6
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+3656: (bf) r7 = r4                    ; frame1: R4=pkt(r=12,imm=6) R7=pkt(r=12,imm=6)
+3657: (0f) r7 += r0                   ; frame1: R0=5 R7=pkt(r=12,imm=11)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:178
+3658: (bf) r2 = r7                    ; frame1: R2=pkt(r=12,imm=11) R7=pkt(r=12,imm=11)
+3659: (07) r2 += 1                    ; frame1: R2=pkt(r=12,imm=12)
+3660: (2d) if r2 > r1 goto pc+275     ; frame1: R1=pkt_end() R2=pkt(r=12,imm=12)
+3661: (bf) r2 = r6                    ; frame1: R2=map_value(map=CONFIG,ks=4,vs=120,imm=88) R6=map_value(map=CONFIG,ks=4,vs=120,imm=88)
+3662: (0f) r2 += r0                   ; frame1: R0=5 R2=map_value(map=CONFIG,ks=4,vs=120,imm=93)
+; *p_cur = *s_cur; @ parse.rs:182
+3663: (71) r2 = *(u8 *)(r2 +0)        ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+3664: (73) *(u8 *)(r7 +0) = r2        ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R7=pkt(r=12,imm=11)
+; i += 1; @ parse.rs:186
+3665: (07) r0 += 1                    ; frame1: R0=6
+; while i < m { @ parse.rs:177
+3666: (2d) if r5 > r0 goto pc-11      ; frame1: R0=6 R5=6
+; || wb16(data, data_end, l3 - 2, ETH_P_IP).is_err() @ main.rs:621
+3667: (79) r2 = *(u64 *)(r10 -224)    ; frame1: R2=18 R10=fp0 fp-224=18
+3668: (07) r2 += -2                   ; frame1: R2=16
+; let o = zext(off); @ main.rs:129
+3669: (63) *(u32 *)(r10 -120) = r2    ; frame1: R2=16 R10=fp0 fp-120=mmmm16
+; intrinsics::volatile_load(src) @ mod.rs:2163
+3670: (61) r4 = *(u32 *)(r10 -120)    ; frame1: R4=16 R10=fp0 fp-120=mmmm16
+; if data + o + 2 > data_end { @ main.rs:130
+3671: (79) r2 = *(u64 *)(r10 -216)    ; frame1: R2=pkt(r=12) R10=fp0 fp-216=pkt(r=12)
+3672: (0f) r4 += r2                   ; frame1: R2=pkt(r=12) R4=pkt(r=12,imm=16)
+3673: (bf) r2 = r4                    ; frame1: R2=pkt(r=12,imm=16) R4=pkt(r=12,imm=16)
+3674: (07) r2 += 2                    ; frame1: R2=pkt(r=12,imm=18)
+3675: (2d) if r2 > r1 goto pc+260     ; frame1: R1=pkt_end() R2=pkt(r=18,imm=18)
+3676: (79) r5 = *(u64 *)(r10 -256)    ; frame1: R5=scalar(id=43,smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R10=fp0 fp-256=scalar(id=43,smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+3677: (67) r5 <<= 4                   ; frame1: R5=scalar(smin=smin32=0,smax=umax=smax32=umax32=4080,var_off=(0x0; 0xff0))
+3678: (79) r2 = *(u64 *)(r10 -208)    ; frame1: R2=scalar(id=44,smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R10=fp0 fp-208=scalar(id=44,smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+3679: (77) r2 >>= 4                   ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=15,var_off=(0x0; 0xf))
+3680: (57) r2 &= 15                   ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=15,var_off=(0x0; 0xf))
+3681: (4f) r5 |= r2                   ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=15,var_off=(0x0; 0xf)) R5=scalar(smin=smin32=0,smax=umax=smax32=umax32=4095,var_off=(0x0; 0xfff))
+; *((data + o) as *mut u8) = b[0]; @ main.rs:134
+3682: (b7) r2 = 8                     ; frame1: R2=8
+3683: (73) *(u8 *)(r4 +0) = r2        ; frame1: R2=8 R4=pkt(r=18,imm=16)
+; *((data + o + 1) as *mut u8) = b[1]; @ main.rs:135
+3684: (b7) r3 = 0                     ; frame1: R3=0
+3685: (73) *(u8 *)(r4 +1) = r3        ; frame1: R3=0 R4=pkt(r=18,imm=16)
+; intrinsics::bswap(self as $ActualT) as Self @ uint_macros.rs:767
+3686: (79) r2 = *(u64 *)(r10 -360)    ; frame1: R2=scalar(id=45,smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff)) R10=fp0 fp-360=scalar(id=45,smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff))
+3687: (dc) r2 = be32 r2               ; frame1: R2=scalar(smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff))
+; unsafe { mem::transmute(self) } @ uint_macros.rs:4075
+3688: (63) *(u32 *)(r10 -64) = r2     ; frame1: R2=scalar(id=46,smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff)) R10=fp0 fp-64=????scalar(id=46,smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff))
+; let v45 = [0x45, tclass]; @ main.rs:631
+3689: (73) *(u8 *)(r10 -121) = r5     ; frame1: R5=scalar(smin=smin32=0,smax=umax=smax32=umax32=4095,var_off=(0x0; 0xfff)) R10=fp0 fp-128=m???00mm
+3690: (b7) r2 = 69                    ; frame1: R2=69
+3691: (73) *(u8 *)(r10 -122) = r2     ; frame1: R2=69 R10=fp0 fp-128=mm??00mm
+; let df = [0x40, 0]; @ main.rs:632
+3692: (73) *(u8 *)(r10 -15) = r3      ; frame1: R3=0 R10=fp0 fp-16=??????0?
+3693: (b7) r2 = 64                    ; frame1: R2=64
+3694: (73) *(u8 *)(r10 -16) = r2      ; frame1: R2=64 R10=fp0 fp-16=??????064
+; let tt = [ttl, out_proto]; @ main.rs:633
+3695: (79) r2 = *(u64 *)(r10 -304)    ; frame1: R2=6 R10=fp0 fp-304=6
+3696: (73) *(u8 *)(r10 -35) = r2      ; frame1: R2=6 R10=fp0 fp-40=??m?????
+3697: (79) r2 = *(u64 *)(r10 -264)    ; frame1: R2=scalar(id=47,smin=umin=smin32=umin32=2,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R10=fp0 fp-264=scalar(id=47,smin=umin=smin32=umin32=2,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+; let ttl = hlim - 1; @ main.rs:629
+3698: (07) r2 += -1                   ; frame1: R2=scalar(id=47-1,smin=umin=smin32=umin32=1,smax=umax=smax32=umax32=254,var_off=(0x0; 0xff))
+; let tt = [ttl, out_proto]; @ main.rs:633
+3699: (73) *(u8 *)(r10 -36) = r2      ; frame1: R2=scalar(id=47-1,smin=umin=smin32=umin32=1,smax=umax=smax32=umax32=254,var_off=(0x0; 0xff)) R10=fp0 fp-40=??mm????
+; let d = zext(dst); @ parse.rs:167
+3700: (79) r2 = *(u64 *)(r10 -224)    ; frame1: R2=18 R10=fp0 fp-224=18
+3701: (63) *(u32 *)(r10 -120) = r2    ; frame1: R2=18 R10=fp0 fp-120=mmmm18
+; intrinsics::volatile_load(src) @ mod.rs:2163
+3702: (61) r4 = *(u32 *)(r10 -120)    ; frame1: R4=18 R10=fp0 fp-120=mmmm18
+; let m = zext(len); @ parse.rs:168
+3703: (b7) r2 = 2                     ; frame1: R2=2
+3704: (63) *(u32 *)(r10 -120) = r2    ; frame1: R2=2 R10=fp0 fp-120=mmmm2
+; let p = (data + d) as *mut u8; @ parse.rs:169
+3705: (79) r2 = *(u64 *)(r10 -216)    ; frame1: R2=pkt(r=18) R10=fp0 fp-216=pkt(r=18)
+3706: (0f) r4 += r2                   ; frame1: R2=pkt(r=18) R4=pkt(r=18,imm=18)
+; intrinsics::volatile_load(src) @ mod.rs:2163
+3707: (61) r5 = *(u32 *)(r10 -120)    ; frame1: R5=2 R10=fp0 fp-120=mmmm2
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+3708: (bf) r2 = r4                    ; frame1: R2=pkt(r=18,imm=18) R4=pkt(r=18,imm=18)
+3709: (0f) r2 += r5                   ; frame1: R2=pkt(r=18,imm=20) R5=2
+; if unsafe { p.add(m) } > end { @ parse.rs:171
+3710: (2d) if r2 > r1 goto pc+1519    ; frame1: R1=pkt_end() R2=pkt(r=20,imm=20)
+; while i < m { @ parse.rs:177
+3711: (15) if r5 == 0x0 goto pc+13    ; frame1: R5=2
+3712: (b7) r0 = 0                     ; frame1: R0=0
+3713: (bf) r6 = r10                   ; frame1: R6=fp0 R10=fp0
+3714: (07) r6 += -122                 ; frame1: R6=fp-122
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+3715: (bf) r7 = r4                    ; frame1: R4=pkt(r=20,imm=18) R7=pkt(r=20,imm=18)
+3716: (0f) r7 += r0                   ; frame1: R0=0 R7=pkt(r=20,imm=18)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:178
+3717: (bf) r2 = r7                    ; frame1: R2=pkt(r=20,imm=18) R7=pkt(r=20,imm=18)
+3718: (07) r2 += 1                    ; frame1: R2=pkt(r=20,imm=19)
+3719: (2d) if r2 > r1 goto pc+1510    ; frame1: R1=pkt_end() R2=pkt(r=20,imm=19)
+3720: (0f) r6 += r0                   ; frame1: R0=0 R6=fp-122
+; *p_cur = *s_cur; @ parse.rs:182
+3721: (71) r2 = *(u8 *)(r6 +0)        ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R6=fp-122 fp-128=mm??00mm
+3722: (73) *(u8 *)(r7 +0) = r2        ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R7=pkt(r=20,imm=18)
+; i += 1; @ parse.rs:186
+3723: (07) r0 += 1                    ; frame1: R0=1
+; while i < m { @ parse.rs:177
+3724: (2d) if r5 > r0 goto pc-12      ; frame1: R0=1 R5=2
+3713: (bf) r6 = r10                   ; frame1: R6=fp0 R10=fp0
+3714: (07) r6 += -122                 ; frame1: R6=fp-122
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+3715: (bf) r7 = r4                    ; frame1: R4=pkt(r=20,imm=18) R7=pkt(r=20,imm=18)
+3716: (0f) r7 += r0                   ; frame1: R0=1 R7=pkt(r=20,imm=19)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:178
+3717: (bf) r2 = r7                    ; frame1: R2=pkt(r=20,imm=19) R7=pkt(r=20,imm=19)
+3718: (07) r2 += 1                    ; frame1: R2=pkt(r=20,imm=20)
+3719: (2d) if r2 > r1 goto pc+1510    ; frame1: R1=pkt_end() R2=pkt(r=20,imm=20)
+3720: (0f) r6 += r0                   ; frame1: R0=1 R6=fp-121
+; *p_cur = *s_cur; @ parse.rs:182
+3721: (71) r2 = *(u8 *)(r6 +0)        ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R6=fp-121 fp-128=mm??00mm
+3722: (73) *(u8 *)(r7 +0) = r2        ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R7=pkt(r=20,imm=19)
+; i += 1; @ parse.rs:186
+3723: (07) r0 += 1                    ; frame1: R0=2
+; while i < m { @ parse.rs:177
+3724: (2d) if r5 > r0 goto pc-12      ; frame1: R0=2 R5=2
+; || wb16(data, data_end, l3 + 2, total).is_err() @ main.rs:635
+3725: (79) r2 = *(u64 *)(r10 -224)    ; frame1: R2=18 R10=fp0 fp-224=18
+3726: (07) r2 += 2                    ; frame1: R2=20
+; let o = zext(off); @ main.rs:129
+3727: (63) *(u32 *)(r10 -120) = r2    ; frame1: R2=20 R10=fp0 fp-120=mmmm20
+; intrinsics::volatile_load(src) @ mod.rs:2163
+3728: (61) r4 = *(u32 *)(r10 -120)    ; frame1: R4=20 R10=fp0 fp-120=mmmm20
+; if data + o + 2 > data_end { @ main.rs:130
+3729: (79) r2 = *(u64 *)(r10 -216)    ; frame1: R2=pkt(r=20) R10=fp0 fp-216=pkt(r=20)
+3730: (0f) r4 += r2                   ; frame1: R2=pkt(r=20) R4=pkt(r=20,imm=20)
+3731: (bf) r2 = r4                    ; frame1: R2=pkt(r=20,imm=20) R4=pkt(r=20,imm=20)
+3732: (07) r2 += 2                    ; frame1: R2=pkt(r=20,imm=22)
+3733: (2d) if r2 > r1 goto pc+1496    ; frame1: R1=pkt_end() R2=pkt(r=22,imm=22)
+3734: (07) r8 += -20                  ; frame1: R8=scalar()
+; let total = (new_len - l3) as u16; @ main.rs:628
+3735: (bf) r2 = r8                    ; frame1: R2=scalar(id=48) R8=scalar(id=48)
+3736: (79) r5 = *(u64 *)(r10 -224)    ; frame1: R5=18 R10=fp0 fp-224=18
+3737: (1f) r2 -= r5                   ; frame1: R2=scalar(id=48-18) R5=18
+; intrinsics::bswap(self as $ActualT) as Self @ uint_macros.rs:767
+3738: (bf) r5 = r2                    ; frame1: R2=scalar(id=49) R5=scalar(id=49)
+3739: (dc) r5 = be16 r5               ; frame1: R5=scalar(smin=smin32=0,smax=umax=smax32=umax32=0xffff,var_off=(0x0; 0xffff))
+; *((data + o) as *mut u8) = b[0]; @ main.rs:134
+3740: (73) *(u8 *)(r4 +0) = r5        ; frame1: R4=pkt(r=22,imm=20) R5=scalar(smin=smin32=0,smax=umax=smax32=umax32=0xffff,var_off=(0x0; 0xffff))
+; intrinsics::bswap(self as $ActualT) as Self @ uint_macros.rs:767
+3741: (dc) r2 = be64 r2               ; frame1: R2=scalar()
+; unsafe { mem::transmute(self) } @ uint_macros.rs:4075
+3742: (77) r2 >>= 56                  ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff))
+; *((data + o + 1) as *mut u8) = b[1]; @ main.rs:135
+3743: (73) *(u8 *)(r4 +1) = r2        ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R4=pkt(r=22,imm=20)
+; let o = zext(off); @ main.rs:129
+3744: (79) r2 = *(u64 *)(r10 -248)    ; frame1: R2=22 R10=fp0 fp-248=22
+3745: (63) *(u32 *)(r10 -120) = r2    ; frame1: R2=22 R10=fp0 fp-120=mmmm22
+; intrinsics::volatile_load(src) @ mod.rs:2163
+3746: (61) r4 = *(u32 *)(r10 -120)    ; frame1: R4=22 R10=fp0 fp-120=mmmm22
+; if data + o + 2 > data_end { @ main.rs:130
+3747: (79) r2 = *(u64 *)(r10 -216)    ; frame1: R2=pkt(r=22) R10=fp0 fp-216=pkt(r=22)
+3748: (0f) r4 += r2                   ; frame1: R2=pkt(r=22) R4=pkt(r=22,imm=22)
+3749: (bf) r2 = r4                    ; frame1: R2=pkt(r=22,imm=22) R4=pkt(r=22,imm=22)
+3750: (07) r2 += 2                    ; frame1: R2=pkt(r=22,imm=24)
+3751: (2d) if r2 > r1 goto pc+1478    ; frame1: R1=pkt_end() R2=pkt(r=24,imm=24)
+; *((data + o) as *mut u8) = b[0]; @ main.rs:134
+3752: (b7) r2 = 0                     ; frame1: R2=0
+; *((data + o + 1) as *mut u8) = b[1]; @ main.rs:135
+3753: (73) *(u8 *)(r4 +1) = r2        ; frame1: R2=0 R4=pkt(r=24,imm=22)
+; *((data + o) as *mut u8) = b[0]; @ main.rs:134
+3754: (73) *(u8 *)(r4 +0) = r2        ; frame1: R2=0 R4=pkt(r=24,imm=22)
+; let d = zext(dst); @ parse.rs:167
+3755: (79) r2 = *(u64 *)(r10 -240)    ; frame1: R2=24 R10=fp0 fp-240=24
+3756: (63) *(u32 *)(r10 -120) = r2    ; frame1: R2=24 R10=fp0 fp-120=mmmm24
+; intrinsics::volatile_load(src) @ mod.rs:2163
+3757: (61) r4 = *(u32 *)(r10 -120)    ; frame1: R4=24 R10=fp0 fp-120=mmmm24
+; let m = zext(len); @ parse.rs:168
+3758: (b7) r2 = 2                     ; frame1: R2=2
+3759: (63) *(u32 *)(r10 -120) = r2    ; frame1: R2=2 R10=fp0 fp-120=mmmm2
+; let p = (data + d) as *mut u8; @ parse.rs:169
+3760: (79) r2 = *(u64 *)(r10 -216)    ; frame1: R2=pkt(r=24) R10=fp0 fp-216=pkt(r=24)
+3761: (0f) r4 += r2                   ; frame1: R2=pkt(r=24) R4=pkt(r=24,imm=24)
+; intrinsics::volatile_load(src) @ mod.rs:2163
+3762: (61) r5 = *(u32 *)(r10 -120)    ; frame1: R5=2 R10=fp0 fp-120=mmmm2
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+3763: (bf) r2 = r4                    ; frame1: R2=pkt(r=24,imm=24) R4=pkt(r=24,imm=24)
+3764: (0f) r2 += r5                   ; frame1: R2=pkt(r=24,imm=26) R5=2
+; if unsafe { p.add(m) } > end { @ parse.rs:171
+3765: (2d) if r2 > r1 goto pc+1464    ; frame1: R1=pkt_end() R2=pkt(r=26,imm=26)
+; while i < m { @ parse.rs:177
+3766: (15) if r5 == 0x0 goto pc+13    ; frame1: R5=2
+3767: (b7) r0 = 0                     ; frame1: R0=0
+3768: (bf) r6 = r10                   ; frame1: R6=fp0 R10=fp0
+3769: (07) r6 += -16                  ; frame1: R6=fp-16
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+3770: (bf) r7 = r4                    ; frame1: R4=pkt(r=26,imm=24) R7=pkt(r=26,imm=24)
+3771: (0f) r7 += r0                   ; frame1: R0=0 R7=pkt(r=26,imm=24)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:178
+3772: (bf) r2 = r7                    ; frame1: R2=pkt(r=26,imm=24) R7=pkt(r=26,imm=24)
+3773: (07) r2 += 1                    ; frame1: R2=pkt(r=26,imm=25)
+3774: (2d) if r2 > r1 goto pc+1455    ; frame1: R1=pkt_end() R2=pkt(r=26,imm=25)
+3775: (0f) r6 += r0                   ; frame1: R0=0 R6=fp-16
+; *p_cur = *s_cur; @ parse.rs:182
+3776: (71) r2 = *(u8 *)(r6 +0)        ; frame1: R2=64 R6=fp-16 fp-16=??????064
+3777: (73) *(u8 *)(r7 +0) = r2        ; frame1: R2=64 R7=pkt(r=26,imm=24)
+; i += 1; @ parse.rs:186
+3778: (07) r0 += 1                    ; frame1: R0=1
+; while i < m { @ parse.rs:177
+3779: (2d) if r5 > r0 goto pc-12      ; frame1: R0=1 R5=2
+3768: (bf) r6 = r10                   ; frame1: R6=fp0 R10=fp0
+3769: (07) r6 += -16                  ; frame1: R6=fp-16
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+3770: (bf) r7 = r4                    ; frame1: R4=pkt(r=26,imm=24) R7=pkt(r=26,imm=24)
+3771: (0f) r7 += r0                   ; frame1: R0=1 R7=pkt(r=26,imm=25)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:178
+3772: (bf) r2 = r7                    ; frame1: R2=pkt(r=26,imm=25) R7=pkt(r=26,imm=25)
+3773: (07) r2 += 1                    ; frame1: R2=pkt(r=26,imm=26)
+3774: (2d) if r2 > r1 goto pc+1455    ; frame1: R1=pkt_end() R2=pkt(r=26,imm=26)
+3775: (0f) r6 += r0                   ; frame1: R0=1 R6=fp-15
+; *p_cur = *s_cur; @ parse.rs:182
+3776: (71) r2 = *(u8 *)(r6 +0)        ; frame1: R2=0 R6=fp-15 fp-16=??????064
+3777: (73) *(u8 *)(r7 +0) = r2        ; frame1: R2=0 R7=pkt(r=26,imm=25)
+; i += 1; @ parse.rs:186
+3778: (07) r0 += 1                    ; frame1: R0=2
+; while i < m { @ parse.rs:177
+3779: (2d) if r5 > r0 goto pc-12      ; frame1: R0=2 R5=2
+; let d = zext(dst); @ parse.rs:167
+3780: (79) r2 = *(u64 *)(r10 -288)    ; frame1: R2=26 R10=fp0 fp-288=26
+3781: (63) *(u32 *)(r10 -120) = r2    ; frame1: R2=26 R10=fp0 fp-120=mmmm26
+; intrinsics::volatile_load(src) @ mod.rs:2163
+3782: (61) r4 = *(u32 *)(r10 -120)    ; frame1: R4=26 R10=fp0 fp-120=mmmm26
+; let m = zext(len); @ parse.rs:168
+3783: (b7) r2 = 2                     ; frame1: R2=2
+3784: (63) *(u32 *)(r10 -120) = r2    ; frame1: R2=2 R10=fp0 fp-120=mmmm2
+; let p = (data + d) as *mut u8; @ parse.rs:169
+3785: (79) r2 = *(u64 *)(r10 -216)    ; frame1: R2=pkt(r=26) R10=fp0 fp-216=pkt(r=26)
+3786: (0f) r4 += r2                   ; frame1: R2=pkt(r=26) R4=pkt(r=26,imm=26)
+; intrinsics::volatile_load(src) @ mod.rs:2163
+3787: (61) r5 = *(u32 *)(r10 -120)    ; frame1: R5=2 R10=fp0 fp-120=mmmm2
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+3788: (bf) r2 = r4                    ; frame1: R2=pkt(r=26,imm=26) R4=pkt(r=26,imm=26)
+3789: (0f) r2 += r5                   ; frame1: R2=pkt(r=26,imm=28) R5=2
+; if unsafe { p.add(m) } > end { @ parse.rs:171
+3790: (2d) if r2 > r1 goto pc+1439    ; frame1: R1=pkt_end() R2=pkt(r=28,imm=28)
+; while i < m { @ parse.rs:177
+3791: (15) if r5 == 0x0 goto pc+13    ; frame1: R5=2
+3792: (b7) r0 = 0                     ; frame1: R0=0
+3793: (bf) r6 = r10                   ; frame1: R6=fp0 R10=fp0
+3794: (07) r6 += -36                  ; frame1: R6=fp-36
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+3795: (bf) r7 = r4                    ; frame1: R4=pkt(r=28,imm=26) R7=pkt(r=28,imm=26)
+3796: (0f) r7 += r0                   ; frame1: R0=0 R7=pkt(r=28,imm=26)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:178
+3797: (bf) r2 = r7                    ; frame1: R2=pkt(r=28,imm=26) R7=pkt(r=28,imm=26)
+3798: (07) r2 += 1                    ; frame1: R2=pkt(r=28,imm=27)
+3799: (2d) if r2 > r1 goto pc+1430    ; frame1: R1=pkt_end() R2=pkt(r=28,imm=27)
+3800: (0f) r6 += r0                   ; frame1: R0=0 R6=fp-36
+; *p_cur = *s_cur; @ parse.rs:182
+3801: (71) r2 = *(u8 *)(r6 +0)        ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R6=fp-36 fp-40=??mm????
+3802: (73) *(u8 *)(r7 +0) = r2        ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R7=pkt(r=28,imm=26)
+; i += 1; @ parse.rs:186
+3803: (07) r0 += 1                    ; frame1: R0=1
+; while i < m { @ parse.rs:177
+3804: (2d) if r5 > r0 goto pc-12      ; frame1: R0=1 R5=2
+3793: (bf) r6 = r10                   ; frame1: R6=fp0 R10=fp0
+3794: (07) r6 += -36                  ; frame1: R6=fp-36
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+3795: (bf) r7 = r4                    ; frame1: R4=pkt(r=28,imm=26) R7=pkt(r=28,imm=26)
+3796: (0f) r7 += r0                   ; frame1: R0=1 R7=pkt(r=28,imm=27)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:178
+3797: (bf) r2 = r7                    ; frame1: R2=pkt(r=28,imm=27) R7=pkt(r=28,imm=27)
+3798: (07) r2 += 1                    ; frame1: R2=pkt(r=28,imm=28)
+3799: (2d) if r2 > r1 goto pc+1430    ; frame1: R1=pkt_end() R2=pkt(r=28,imm=28)
+3800: (0f) r6 += r0                   ; frame1: R0=1 R6=fp-35
+; *p_cur = *s_cur; @ parse.rs:182
+3801: (71) r2 = *(u8 *)(r6 +0)        ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R6=fp-35 fp-40=??mm????
+3802: (73) *(u8 *)(r7 +0) = r2        ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R7=pkt(r=28,imm=27)
+; i += 1; @ parse.rs:186
+3803: (07) r0 += 1                    ; frame1: R0=2
+; while i < m { @ parse.rs:177
+3804: (2d) if r5 > r0 goto pc-12      ; frame1: R0=2 R5=2
+; || wb16(data, data_end, l3 + 10, 0).is_err() @ main.rs:639
+3805: (79) r2 = *(u64 *)(r10 -224)    ; frame1: R2=18 R10=fp0 fp-224=18
+3806: (07) r2 += 10                   ; frame1: R2=28
+3807: (7b) *(u64 *)(r10 -208) = r2    ; frame1: R2=28 R10=fp0 fp-208=28
+; let o = zext(off); @ main.rs:129
+3808: (63) *(u32 *)(r10 -120) = r2    ; frame1: R2=28 R10=fp0 fp-120=mmmm28
+; intrinsics::volatile_load(src) @ mod.rs:2163
+3809: (61) r5 = *(u32 *)(r10 -120)    ; frame1: R5=28 R10=fp0 fp-120=mmmm28
+; if data + o + 2 > data_end { @ main.rs:130
+3810: (79) r2 = *(u64 *)(r10 -216)    ; frame1: R2=pkt(r=28) R10=fp0 fp-216=pkt(r=28)
+3811: (0f) r5 += r2                   ; frame1: R2=pkt(r=28) R5=pkt(r=28,imm=28)
+3812: (bf) r2 = r5                    ; frame1: R2=pkt(r=28,imm=28) R5=pkt(r=28,imm=28)
+3813: (07) r2 += 2                    ; frame1: R2=pkt(r=28,imm=30)
+3814: (2d) if r2 > r1 goto pc+1415    ; frame1: R1=pkt_end() R2=pkt(r=30,imm=30)
+; *((data + o) as *mut u8) = b[0]; @ main.rs:134
+3815: (b7) r2 = 0                     ; frame1: R2=0
+; *((data + o + 1) as *mut u8) = b[1]; @ main.rs:135
+3816: (73) *(u8 *)(r5 +1) = r2        ; frame1: R2=0 R5=pkt(r=30,imm=28)
+; *((data + o) as *mut u8) = b[0]; @ main.rs:134
+3817: (73) *(u8 *)(r5 +0) = r2        ; frame1: R2=0 R5=pkt(r=30,imm=28)
+; || write_bytes(data, data_end, l3 + 12, ext_b.as_ptr(), 4).is_err() @ main.rs:640
+3818: (79) r2 = *(u64 *)(r10 -224)    ; frame1: R2=18 R10=fp0 fp-224=18
+3819: (07) r2 += 12                   ; frame1: R2=30
+; let d = zext(dst); @ parse.rs:167
+3820: (63) *(u32 *)(r10 -120) = r2    ; frame1: R2=30 R10=fp0 fp-120=mmmm30
+; intrinsics::volatile_load(src) @ mod.rs:2163
+3821: (61) r4 = *(u32 *)(r10 -120)    ; frame1: R4=30 R10=fp0 fp-120=mmmm30
+; let m = zext(len); @ parse.rs:168
+3822: (b7) r2 = 4                     ; frame1: R2=4
+3823: (63) *(u32 *)(r10 -120) = r2    ; frame1: R2=4 R10=fp0 fp-120=mmmm4
+; let p = (data + d) as *mut u8; @ parse.rs:169
+3824: (79) r2 = *(u64 *)(r10 -216)    ; frame1: R2=pkt(r=30) R10=fp0 fp-216=pkt(r=30)
+3825: (0f) r4 += r2                   ; frame1: R2=pkt(r=30) R4=pkt(r=30,imm=30)
+; intrinsics::volatile_load(src) @ mod.rs:2163
+3826: (61) r0 = *(u32 *)(r10 -120)    ; frame1: R0=4 R10=fp0 fp-120=mmmm4
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+3827: (bf) r2 = r4                    ; frame1: R2=pkt(r=30,imm=30) R4=pkt(r=30,imm=30)
+3828: (0f) r2 += r0                   ; frame1: R0=4 R2=pkt(r=30,imm=34)
+; if unsafe { p.add(m) } > end { @ parse.rs:171
+3829: (2d) if r2 > r1 goto pc+1400    ; frame1: R1=pkt_end() R2=pkt(r=34,imm=34)
+; while i < m { @ parse.rs:177
+3830: (15) if r0 == 0x0 goto pc+13    ; frame1: R0=4
+3831: (b7) r6 = 0                     ; frame1: R6=0
+3832: (bf) r7 = r10                   ; frame1: R7=fp0 R10=fp0
+3833: (07) r7 += -64                  ; frame1: R7=fp-64
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+3834: (bf) r5 = r4                    ; frame1: R4=pkt(r=34,imm=30) R5=pkt(r=34,imm=30)
+3835: (0f) r5 += r6                   ; frame1: R5=pkt(r=34,imm=30) R6=0
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:178
+3836: (bf) r2 = r5                    ; frame1: R2=pkt(r=34,imm=30) R5=pkt(r=34,imm=30)
+3837: (07) r2 += 1                    ; frame1: R2=pkt(r=34,imm=31)
+3838: (2d) if r2 > r1 goto pc+1391    ; frame1: R1=pkt_end() R2=pkt(r=34,imm=31)
+3839: (0f) r7 += r6                   ; frame1: R6=0 R7=fp-64
+; *p_cur = *s_cur; @ parse.rs:182
+3840: (71) r2 = *(u8 *)(r7 +0)        ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R7=fp-64 fp-64=????scalar(smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff))
+3841: (73) *(u8 *)(r5 +0) = r2        ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R5=pkt(r=34,imm=30)
+; i += 1; @ parse.rs:186
+3842: (07) r6 += 1                    ; frame1: R6=1
+; while i < m { @ parse.rs:177
+3843: (2d) if r0 > r6 goto pc-12      ; frame1: R0=4 R6=1
+3832: (bf) r7 = r10                   ; frame1: R7=fp0 R10=fp0
+3833: (07) r7 += -64                  ; frame1: R7=fp-64
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+3834: (bf) r5 = r4                    ; frame1: R4=pkt(r=34,imm=30) R5=pkt(r=34,imm=30)
+3835: (0f) r5 += r6                   ; frame1: R5=pkt(r=34,imm=31) R6=1
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:178
+3836: (bf) r2 = r5                    ; frame1: R2=pkt(r=34,imm=31) R5=pkt(r=34,imm=31)
+3837: (07) r2 += 1                    ; frame1: R2=pkt(r=34,imm=32)
+3838: (2d) if r2 > r1 goto pc+1391    ; frame1: R1=pkt_end() R2=pkt(r=34,imm=32)
+3839: (0f) r7 += r6                   ; frame1: R6=1 R7=fp-63
+; *p_cur = *s_cur; @ parse.rs:182
+3840: (71) r2 = *(u8 *)(r7 +0)        ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R7=fp-63 fp-64=????scalar(smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff))
+3841: (73) *(u8 *)(r5 +0) = r2        ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R5=pkt(r=34,imm=31)
+; i += 1; @ parse.rs:186
+3842: (07) r6 += 1                    ; frame1: R6=2
+; while i < m { @ parse.rs:177
+3843: (2d) if r0 > r6 goto pc-12      ; frame1: R0=4 R6=2
+3832: (bf) r7 = r10                   ; frame1: R7=fp0 R10=fp0
+3833: (07) r7 += -64                  ; frame1: R7=fp-64
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+3834: (bf) r5 = r4                    ; frame1: R4=pkt(r=34,imm=30) R5=pkt(r=34,imm=30)
+3835: (0f) r5 += r6                   ; frame1: R5=pkt(r=34,imm=32) R6=2
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:178
+3836: (bf) r2 = r5                    ; frame1: R2=pkt(r=34,imm=32) R5=pkt(r=34,imm=32)
+3837: (07) r2 += 1                    ; frame1: R2=pkt(r=34,imm=33)
+3838: (2d) if r2 > r1 goto pc+1391    ; frame1: R1=pkt_end() R2=pkt(r=34,imm=33)
+3839: (0f) r7 += r6                   ; frame1: R6=2 R7=fp-62
+; *p_cur = *s_cur; @ parse.rs:182
+3840: (71) r2 = *(u8 *)(r7 +0)        ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R7=fp-62 fp-64=????scalar(smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff))
+3841: (73) *(u8 *)(r5 +0) = r2        ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R5=pkt(r=34,imm=32)
+; i += 1; @ parse.rs:186
+3842: (07) r6 += 1                    ; frame1: R6=3
+; while i < m { @ parse.rs:177
+3843: (2d) if r0 > r6 goto pc-12      ; frame1: R0=4 R6=3
+3832: (bf) r7 = r10                   ; frame1: R7=fp0 R10=fp0
+3833: (07) r7 += -64                  ; frame1: R7=fp-64
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+3834: (bf) r5 = r4                    ; frame1: R4=pkt(r=34,imm=30) R5=pkt(r=34,imm=30)
+3835: (0f) r5 += r6                   ; frame1: R5=pkt(r=34,imm=33) R6=3
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:178
+3836: (bf) r2 = r5                    ; frame1: R2=pkt(r=34,imm=33) R5=pkt(r=34,imm=33)
+3837: (07) r2 += 1                    ; frame1: R2=pkt(r=34,imm=34)
+3838: (2d) if r2 > r1 goto pc+1391    ; frame1: R1=pkt_end() R2=pkt(r=34,imm=34)
+3839: (0f) r7 += r6                   ; frame1: R6=3 R7=fp-61
+; *p_cur = *s_cur; @ parse.rs:182
+3840: (71) r2 = *(u8 *)(r7 +0)        ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R7=fp-61 fp-64=????scalar(smin=0,smax=umax=0xffffffff,var_off=(0x0; 0xffffffff))
+3841: (73) *(u8 *)(r5 +0) = r2        ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R5=pkt(r=34,imm=33)
+; i += 1; @ parse.rs:186
+3842: (07) r6 += 1                    ; frame1: R6=4
+; while i < m { @ parse.rs:177
+3843: (2d) if r0 > r6 goto pc-12      ; frame1: R0=4 R6=4
+; || write_bytes(data, data_end, l3 + 16, dst4.as_ptr(), 4).is_err() @ main.rs:641
+3844: (79) r2 = *(u64 *)(r10 -224)    ; frame1: R2=18 R10=fp0 fp-224=18
+3845: (07) r2 += 16                   ; frame1: R2=34
+; let d = zext(dst); @ parse.rs:167
+3846: (63) *(u32 *)(r10 -120) = r2    ; frame1: R2=34 R10=fp0 fp-120=mmmm34
+; intrinsics::volatile_load(src) @ mod.rs:2163
+3847: (61) r5 = *(u32 *)(r10 -120)    ; frame1: R5=34 R10=fp0 fp-120=mmmm34
+; let m = zext(len); @ parse.rs:168
+3848: (b7) r2 = 4                     ; frame1: R2=4
+3849: (63) *(u32 *)(r10 -120) = r2    ; frame1: R2=4 R10=fp0 fp-120=mmmm4
+; let p = (data + d) as *mut u8; @ parse.rs:169
+3850: (79) r2 = *(u64 *)(r10 -216)    ; frame1: R2=pkt(r=34) R10=fp0 fp-216=pkt(r=34)
+3851: (0f) r5 += r2                   ; frame1: R2=pkt(r=34) R5=pkt(r=34,imm=34)
+; intrinsics::volatile_load(src) @ mod.rs:2163
+3852: (61) r0 = *(u32 *)(r10 -120)    ; frame1: R0=4 R10=fp0 fp-120=mmmm4
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+3853: (bf) r2 = r5                    ; frame1: R2=pkt(r=34,imm=34) R5=pkt(r=34,imm=34)
+3854: (0f) r2 += r0                   ; frame1: R0=4 R2=pkt(r=34,imm=38)
+; if unsafe { p.add(m) } > end { @ parse.rs:171
+3855: (2d) if r2 > r1 goto pc+1374    ; frame1: R1=pkt_end() R2=pkt(r=38,imm=38)
+; while i < m { @ parse.rs:177
+3856: (15) if r0 == 0x0 goto pc+13    ; frame1: R0=4
+3857: (b7) r6 = 0                     ; frame1: R6=0
+3858: (bf) r4 = r10                   ; frame1: R4=fp0 R10=fp0
+3859: (07) r4 += -156                 ; frame1: R4=fp-156
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+3860: (bf) r7 = r5                    ; frame1: R5=pkt(r=38,imm=34) R7=pkt(r=38,imm=34)
+3861: (0f) r7 += r6                   ; frame1: R6=0 R7=pkt(r=38,imm=34)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:178
+3862: (bf) r2 = r7                    ; frame1: R2=pkt(r=38,imm=34) R7=pkt(r=38,imm=34)
+3863: (07) r2 += 1                    ; frame1: R2=pkt(r=38,imm=35)
+3864: (2d) if r2 > r1 goto pc+1365    ; frame1: R1=pkt_end() R2=pkt(r=38,imm=35)
+3865: (0f) r4 += r6                   ; frame1: R4=fp-156 R6=0
+; *p_cur = *s_cur; @ parse.rs:182
+3866: (71) r2 = *(u8 *)(r4 +0)        ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R4=fp-156 fp-160=mmmmmmmm
+3867: (73) *(u8 *)(r7 +0) = r2        ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R7=pkt(r=38,imm=34)
+; i += 1; @ parse.rs:186
+3868: (07) r6 += 1                    ; frame1: R6=1
+; while i < m { @ parse.rs:177
+3869: (2d) if r0 > r6 goto pc-12      ; frame1: R0=4 R6=1
+3858: (bf) r4 = r10                   ; frame1: R4=fp0 R10=fp0
+3859: (07) r4 += -156                 ; frame1: R4=fp-156
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+3860: (bf) r7 = r5                    ; frame1: R5=pkt(r=38,imm=34) R7=pkt(r=38,imm=34)
+3861: (0f) r7 += r6                   ; frame1: R6=1 R7=pkt(r=38,imm=35)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:178
+3862: (bf) r2 = r7                    ; frame1: R2=pkt(r=38,imm=35) R7=pkt(r=38,imm=35)
+3863: (07) r2 += 1                    ; frame1: R2=pkt(r=38,imm=36)
+3864: (2d) if r2 > r1 goto pc+1365    ; frame1: R1=pkt_end() R2=pkt(r=38,imm=36)
+3865: (0f) r4 += r6                   ; frame1: R4=fp-155 R6=1
+; *p_cur = *s_cur; @ parse.rs:182
+3866: (71) r2 = *(u8 *)(r4 +0)        ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R4=fp-155 fp-160=mmmmmmmm
+3867: (73) *(u8 *)(r7 +0) = r2        ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R7=pkt(r=38,imm=35)
+; i += 1; @ parse.rs:186
+3868: (07) r6 += 1                    ; frame1: R6=2
+; while i < m { @ parse.rs:177
+3869: (2d) if r0 > r6 goto pc-12      ; frame1: R0=4 R6=2
+3858: (bf) r4 = r10                   ; frame1: R4=fp0 R10=fp0
+3859: (07) r4 += -156                 ; frame1: R4=fp-156
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+3860: (bf) r7 = r5                    ; frame1: R5=pkt(r=38,imm=34) R7=pkt(r=38,imm=34)
+3861: (0f) r7 += r6                   ; frame1: R6=2 R7=pkt(r=38,imm=36)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:178
+3862: (bf) r2 = r7                    ; frame1: R2=pkt(r=38,imm=36) R7=pkt(r=38,imm=36)
+3863: (07) r2 += 1                    ; frame1: R2=pkt(r=38,imm=37)
+3864: (2d) if r2 > r1 goto pc+1365    ; frame1: R1=pkt_end() R2=pkt(r=38,imm=37)
+3865: (0f) r4 += r6                   ; frame1: R4=fp-154 R6=2
+; *p_cur = *s_cur; @ parse.rs:182
+3866: (71) r2 = *(u8 *)(r4 +0)        ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R4=fp-154 fp-160=mmmmmmmm
+3867: (73) *(u8 *)(r7 +0) = r2        ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R7=pkt(r=38,imm=36)
+; i += 1; @ parse.rs:186
+3868: (07) r6 += 1                    ; frame1: R6=3
+; while i < m { @ parse.rs:177
+3869: (2d) if r0 > r6 goto pc-12      ; frame1: R0=4 R6=3
+3858: (bf) r4 = r10                   ; frame1: R4=fp0 R10=fp0
+3859: (07) r4 += -156                 ; frame1: R4=fp-156
+; unsafe { intrinsics::offset(self, count) } @ mut_ptr.rs:971
+3860: (bf) r7 = r5                    ; frame1: R5=pkt(r=38,imm=34) R7=pkt(r=38,imm=34)
+3861: (0f) r7 += r6                   ; frame1: R6=3 R7=pkt(r=38,imm=37)
+; if unsafe { p_cur.add(1) } > end { @ parse.rs:178
+3862: (bf) r2 = r7                    ; frame1: R2=pkt(r=38,imm=37) R7=pkt(r=38,imm=37)
+3863: (07) r2 += 1                    ; frame1: R2=pkt(r=38,imm=38)
+3864: (2d) if r2 > r1 goto pc+1365    ; frame1: R1=pkt_end() R2=pkt(r=38,imm=38)
+3865: (0f) r4 += r6                   ; frame1: R4=fp-153 R6=3
+; *p_cur = *s_cur; @ parse.rs:182
+3866: (71) r2 = *(u8 *)(r4 +0)        ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R4=fp-153 fp-160=mmmmmmmm
+3867: (73) *(u8 *)(r7 +0) = r2        ; frame1: R2=scalar(smin=smin32=0,smax=umax=smax32=umax32=255,var_off=(0x0; 0xff)) R7=pkt(r=38,imm=37)
+; i += 1; @ parse.rs:186
+3868: (07) r6 += 1                    ; frame1: R6=4
+; while i < m { @ parse.rs:177
+3869: (2d) if r0 > r6 goto pc-12      ; frame1: R0=4 R6=4
+; let o = zext(off); @ parse.rs:293
+3870: (79) r2 = *(u64 *)(r10 -224)    ; frame1: R2=18 R10=fp0 fp-224=18
+3871: (63) *(u32 *)(r10 -120) = r2    ; frame1: R2=18 R10=fp0 fp-120=mmmm18
+; intrinsics::volatile_load(src) @ mod.rs:2163
+3872: (61) r5 = *(u32 *)(r10 -120)    ; frame1: R5=18 R10=fp0 fp-120=mmmm18
+; let l = zext(len); @ parse.rs:294
+3873: (b7) r2 = 20                    ; frame1: R2=20
+3874: (63) *(u32 *)(r10 -120) = r2    ; frame1: R2=20 R10=fp0 fp-120=mmmm20
+; intrinsics::volatile_load(src) @ mod.rs:2163
+3875: (61) r0 = *(u32 *)(r10 -120)    ; frame1: R0=20 R10=fp0 fp-120=mmmmpppp
+; if l > MAX_COPY as usize { @ parse.rs:295
+3876: (25) if r0 > 0x800 goto pc+1823         ; frame1: R0=20
+; let mut p = (data + o) as *const u8; @ parse.rs:303
+3877: (79) r2 = *(u64 *)(r10 -216)    ; frame1: R2=pkt(r=38) R10=fp0 fp-216=pkt(r=38)
+3878: (0f) r5 += r2                   ; frame1: R5=pkt(r=38,imm=18)
+; if p_addr > end_addr { @ parse.rs:307
+3879: (2d) if r5 > r1 goto pc+1820    ; frame1: R1=pkt_end() R5=pkt(r=38,imm=18)
+3880: (bf) r2 = r1                    ; frame1: R1=pkt_end() R2=pkt_end()
+3881: (1f) r2 -= r5                   ; frame1: R2=scalar() R5=pkt(r=38,imm=18)
+3882: (2d) if r0 > r2 goto pc+1817    ; frame1: R0=20 R2=scalar(umin=20)
+3883: (b7) r3 = 0                     ; frame1: R3=0
+; while remaining >= 2 { @ parse.rs:314
+3884: (b7) r2 = 2                     ; frame1: R2=2
+3885: (2d) if r2 > r0 goto pc+24      ; frame1: R0=20 R2=2
+; if (p as usize).wrapping_add(2) > end as usize { @ parse.rs:315
+3886: (bf) r4 = r1                    ; frame1: R1=pkt_end() R4=pkt_end()
+3887: (07) r4 += 1
+R4 pointer arithmetic on pkt_end prohibited
+verification time 44668 usec
+stack depth 0+360+0+0 max 0
+insns processed 1621
+processed 1621 insns (limit 1000000) max_states_per_insn 2 total_states 84 peak_states 84 mark_read 0
+
+
+Caused by:
+    Permission denied (os error 13)
+nat64 failed to start (see error above)
+--- cleaning up

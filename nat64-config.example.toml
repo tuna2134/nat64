@@ -1,0 +1,65 @@
+# Example NAT64 configuration. Copy to /etc/nat64/config.toml and edit.
+#
+#   nat64 --config /etc/nat64/config.toml run
+#
+# All sections except [interface] ipv6 / [[ipv4_pool]] have defaults.
+
+[interface]
+# IPv6-side interface (client facing). Also the default for ipv4 if unset.
+ipv6 = "eth0"
+# IPv4-side interface (server facing). Same program attaches to both;
+# a single veth works for lab tests (set both to the same name).
+ipv4 = "eth1"
+
+[nat64]
+# RFC 6052 prefix. Valid lengths: /32 /40 /48 /56 /64 /96.
+prefix = "64:ff9b::/96"
+# Hairpinning is NOT implemented yet: packets whose translated destination
+# is one of our own pool addresses are dropped and counted (hairpin_drops).
+hairpinning = false
+
+# External IPv4 pool. At most 8 addresses (dataplane CONFIG limit).
+[[ipv4_pool]]
+address = "192.0.2.10"
+[[ipv4_pool]]
+address = "192.0.2.11"
+
+[port_range]
+start = 1024
+end = 65535
+
+[timeouts]
+udp = 300
+icmp = 60
+tcp_syn = 60
+tcp_transitory = 240
+tcp_established = 7440
+tcp_fin = 120
+tcp_rst = 30
+# Idle lifetime of a BIB entry with no live session referencing it.
+bib = 300
+
+[limits]
+# Advisory watermarks: the GC logs a warning past these; allocation
+# fails closed when the fixed-size BPF maps fill up.
+max_bib_entries = 1000000
+max_session_entries = 2000000
+
+# Static IPv4 -> IPv6 bindings (IPv4-initiated traffic). Optional.
+# [[static_bindings]]
+# ipv4 = "192.0.2.10"
+# ipv4_port = 443
+# protocol = "tcp"
+# ipv6 = "2001:db8:1::10"
+# ipv6_port = 443
+
+[neighbors]
+# Destination MACs for translated egress frames. REQUIRED in production:
+# without them the dataplane falls back to the interface's own MAC
+# (dev-loop only) and logs a warning.
+# ipv4_next_hop = "02:42:ac:11:00:02"
+# ipv6_next_hop = "02:42:ac:11:00:01"
+
+[gc]
+# Seconds between userspace expiry passes.
+interval_secs = 5
