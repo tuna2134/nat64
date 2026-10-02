@@ -286,8 +286,11 @@ pub fn move_right(
 /// Ones-complement sum over the packet range `[off, off+len)`, added to `sum`.
 /// Bounded: rejects lengths above `MAX_COPY`.
 ///
-/// Cursor model: `p` starts at `data+off`, `end` at `data_end`. Each access
-/// is preceded by `p.add(N) > end` checked against that exact `p`.
+/// Packet-cursor model: `p` advances by 1, `end` stays untouched.
+/// Every `*p` is preceded by `p >= end` (packet pointer vs unchanged
+/// `pkt_end`), never `p+N > end` or `end+N` which LLVM rewrites to
+/// `pkt_end +/- const` (prohibited). Whole-range `l > end-p` is scalar
+/// integer, not `p+l > end` pointer arithmetic.
 #[inline(always)]
 pub fn csum_add(data: usize, data_end: usize, off: u32, len: u32, mut sum: u64) -> Result<u64, ()> {
     let o = zext(off);
@@ -295,34 +298,34 @@ pub fn csum_add(data: usize, data_end: usize, off: u32, len: u32, mut sum: u64) 
     if l > MAX_COPY as usize {
         return Err(());
     }
-    // Use integer arithmetic for bounds checks to avoid any `pkt_end +/- N`
-    // generation. `p`/`end` as `*const u8` are packet pointers; casting to
-    // `usize` makes the comparison scalar, so LLVM cannot rewrite
-    // `p.add(N) > end` into `end - N` (which would be `pkt_end - N`,
-    // prohibited). The actual `*p` loads still use the packet pointer `p`.
     let mut p = (data + o) as *const u8;
     let end = data_end as *const u8;
-    let p_addr = p as usize;
-    let end_addr = end as usize;
-    if p_addr > end_addr {
-        return Err(());
+    if p > end {
+        if l != 0 {
+            return Err(());
+        }
+        return Ok(sum);
     }
-    if l > end_addr.wrapping_sub(p_addr) {
+    if l > (end as usize).wrapping_sub(p as usize) {
         return Err(());
     }
     let mut remaining = l;
     while remaining >= 2 {
-        if (p as usize).wrapping_add(2) > end as usize {
+        if p >= end {
             return Err(());
         }
         let hi = unsafe { *p };
-        let lo = unsafe { *p.add(1) };
+        p = unsafe { p.add(1) };
+        if p >= end {
+            return Err(());
+        }
+        let lo = unsafe { *p };
+        p = unsafe { p.add(1) };
         sum += ((hi as u64) << 8) | (lo as u64);
-        p = unsafe { p.add(2) };
         remaining -= 2;
     }
     if remaining != 0 {
-        if (p as usize).wrapping_add(1) > end as usize {
+        if p >= end {
             return Err(());
         }
         let b = unsafe { *p };
