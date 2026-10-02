@@ -286,19 +286,20 @@ pub fn move_right(
 /// Ones-complement sum over the packet range `[off, off+len)`, added to `sum`.
 /// Bounded: rejects lengths above `MAX_COPY`.
 ///
-/// Packet-cursor model: `p` advances by 1, `end` stays untouched.
-/// Every `*p` is preceded by `p >= end` (packet pointer vs unchanged
-/// `pkt_end`), never `p+N > end` or `end+N` which LLVM rewrites to
-/// `pkt_end +/- const` (prohibited). Whole-range `l > end-p` is scalar
-/// integer, not `p+l > end` pointer arithmetic.
+/// Uses `bpf_csum_diff` helper — the kernel does the packet bounds check
+/// for the `from` buffer, so we only need to prove `off+len` is within the
+/// packet via integer `l <= end-p` (no `p+len` pointer arithmetic). The
+/// helper itself is verifier-approved for packet access and avoids the
+/// `p+1 > end` / `end+1` transformation that broke the previous cursor
+/// loop (`R4=pkt_end;R4+=1` prohibited).
 #[inline(always)]
-pub fn csum_add(data: usize, data_end: usize, off: u32, len: u32, mut sum: u64) -> Result<u64, ()> {
+pub fn csum_add(data: usize, data_end: usize, off: u32, len: u32, sum: u64) -> Result<u64, ()> {
     let o = zext(off);
     let l = zext(len);
     if l > MAX_COPY as usize {
         return Err(());
     }
-    let mut p = (data + o) as *const u8;
+    let p = (data + o) as *const u8;
     let end = data_end as *const u8;
     if p > end {
         if l != 0 {
@@ -309,29 +310,21 @@ pub fn csum_add(data: usize, data_end: usize, off: u32, len: u32, mut sum: u64) 
     if l > (end as usize).wrapping_sub(p as usize) {
         return Err(());
     }
-    let mut remaining = l;
-    while remaining >= 2 {
-        if p >= end {
-            return Err(());
-        }
-        let hi = unsafe { *p };
-        p = unsafe { p.add(1) };
-        if p >= end {
-            return Err(());
-        }
-        let lo = unsafe { *p };
-        p = unsafe { p.add(1) };
-        sum += ((hi as u64) << 8) | (lo as u64);
-        remaining -= 2;
+    // `bpf_csum_diff` with `to=null` just checksums `p[0..l]` with `seed=sum`.
+    // Return is `seed + csum(p)` as `__s64`; negative indicates error.
+    let ret = unsafe {
+        aya_ebpf::helpers::generated::bpf_csum_diff(
+            p as *mut u32,
+            l as u32,
+            core::ptr::null_mut(),
+            0,
+            sum as u32,
+        )
+    };
+    if ret < 0 {
+        return Err(());
     }
-    if remaining != 0 {
-        if p >= end {
-            return Err(());
-        }
-        let b = unsafe { *p };
-        sum += (b as u64) << 8;
-    }
-    Ok(sum)
+    Ok(ret as u64)
 }
 
 /// Fold a 64-bit sum into a final checksum field.
